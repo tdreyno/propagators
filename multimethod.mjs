@@ -8,22 +8,22 @@ class MultimethodError extends Error {
   }
 }
 
-const emptyMultimethod = name => (...args) => {
-  throw new MultimethodError(name, args)
-}
+export const Multimethod = (name = "Unknown") => {
+  const overloads = []
 
-export const Multimethod = (
-  name = "Unknown",
-  baseFn = emptyMultimethod(name)
-) => {
-  baseFn.assign = (matcher, fn) => {
-    return Multimethod(name, (...args) => {
+  const baseFn = (...args) => {
+    for (const [matcher, fn] of overloads) {
       if (args.every((arg, i) => matcher[i](arg))) {
         return fn(...args)
       }
+    }
 
-      return baseFn(...args)
-    })
+    throw new MultimethodError(name, args)
+  }
+
+  baseFn.assign = (matcher, fn) => {
+    overloads.unshift([matcher, fn])
+    return baseFn
   }
 
   return baseFn
