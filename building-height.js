@@ -1,13 +1,16 @@
-import {
+const {
   multiplier,
   divider,
   squarer,
   squareRooter,
   compoundPropagator,
   constant,
-} from "../propagators"
-import { cells, addContent, Cell, content } from "../cell"
-import { Interval } from "../interval"
+  cells,
+  addContent,
+  Cell,
+  content,
+  Interval,
+} = require("./pkg/dist-node/index.js")
 
 const product = (x, y, total) => {
   multiplier(x, y, total)
