@@ -5,9 +5,9 @@ import {
   divide,
   square,
   squareRoot,
-} from "./multimethods.mjs"
-import { ContridictionError } from "./contridiction.mjs"
-import { isNumber } from "./util.mjs"
+} from "./multimethods"
+import { ContridictionError } from "./contridiction"
+import { isNumber } from "./util"
 
 class Interval_ {
   constructor(low, high) {

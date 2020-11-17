@@ -1,4 +1,4 @@
-import { isNumber } from "./util.mjs"
+import { isNumber } from "./util"
 
 class MultimethodError extends Error {
   constructor(name, args) {

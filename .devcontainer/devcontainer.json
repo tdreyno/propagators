@@ -1,5 +1,5 @@
 {
-	"name": "Node.js & TypeScript",
+	"name": "Node.js",
 	"build": {
 		"dockerfile": "Dockerfile",
 		// Update 'VARIANT' to pick a Node version: 10, 12, 14
@@ -13,8 +13,7 @@
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"dbaeumer.vscode-eslint",
-		"ms-vscode.vscode-typescript-tslint-plugin"
+		"dbaeumer.vscode-eslint"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

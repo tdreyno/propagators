@@ -5,10 +5,10 @@ import {
   divide,
   square,
   squareRoot,
-} from "./multimethods.mjs"
-import { isNothing, Nothing } from "./nothing.mjs"
-import { addNeighbor, isEmpty, content, addContent, Cell } from "./cell.mjs"
-import { log } from "./util.mjs"
+} from "./multimethods"
+import { isNothing, Nothing } from "./nothing"
+import { addNeighbor, isEmpty, content, addContent, Cell } from "./cell"
+import { log } from "./util"
 
 const propagator = (fn, inputs) => inputs.forEach(addNeighbor(fn))
 

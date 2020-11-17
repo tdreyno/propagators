@@ -1,7 +1,7 @@
 import { range, prop, pipe, call } from "ramda"
-import { Nothing, isNothing } from "./nothing.mjs"
-import { merge, eq } from "./multimethods.mjs"
-import { log } from "./util.mjs"
+import { Nothing, isNothing } from "./nothing"
+import { merge, eq } from "./multimethods"
+import { log } from "./util"
 
 class Cell_ {
   constructor(content = Nothing) {

@@ -5,9 +5,9 @@ import {
   squareRooter,
   compoundPropagator,
   constant,
-} from "./propagators.mjs"
-import { cells, addContent, Cell, content } from "./cell.mjs"
-import { Interval } from "./interval.mjs"
+} from "../propagators"
+import { cells, addContent, Cell, content } from "../cell"
+import { Interval } from "../interval"
 
 const product = (x, y, total) => {
   multiplier(x, y, total)
@@ -51,7 +51,7 @@ similarTriangles(
   barometerShadow,
   barometerHeight,
   buildingShadow,
-  buildingHeight
+  buildingHeight,
 )
 
 addContent(Interval(54.9, 55.1), buildingShadow)

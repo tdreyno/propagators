@@ -1,6 +1,6 @@
 import { T, equals } from "ramda"
-import { merge, eq } from "./multimethods.mjs"
-import { not } from "./util.mjs"
+import { merge, eq } from "./multimethods"
+import { not } from "./util"
 
 export const Nothing = Symbol("nothing")
 
