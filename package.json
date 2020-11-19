@@ -73,7 +73,7 @@
     "lint-staged": "^10.5.1",
     "prettier": "^2.1.2",
     "semantic-release": "^17.2.2",
-    "terser": "^5.3.8"
+    "terser": "^5.5.0"
   },
   "dependencies": {
     "ramda": "^0.27.1"
