@@ -1,42 +1,37 @@
-import {
-  merge,
-  eq,
-  multiply,
-  divide,
-  square,
-  squareRoot,
-} from "./multimethods"
+import { merge, eq, multiply, divide, square, squareRoot } from "./multimethods"
 import { ContridictionError } from "./contridiction"
 import { isNumber } from "./util"
 
 class Interval_ {
-  constructor(low, high) {
-    this.low = low
-    this.high = high
-  }
+  constructor(public low: number, public high: number) {}
 }
 
-export const Interval = (low, high) => new Interval_(low, high)
+export const Interval = (low: number, high: number) => new Interval_(low, high)
+export type Interval = Interval_
 
-const isInterval = value => value instanceof Interval_
+const isInterval = (value: unknown): value is Interval =>
+  value instanceof Interval_
 
-const isEqualInterval = (x, y) => x.low === y.low && x.high === y.high
+const isEqualInterval = (x: Interval, y: Interval) =>
+  x.low === y.low && x.high === y.high
 
-const multiplyInterval = (x, y) => Interval(x.low * y.low, x.high * y.high)
+const multiplyInterval = (x: Interval, y: Interval) =>
+  Interval(x.low * y.low, x.high * y.high)
 
-const divideInterval = (x, y) =>
+const divideInterval = (x: Interval, y: Interval) =>
   multiplyInterval(x, Interval(1 / y.high, 1 / y.low))
 
-const squareInterval = x => Interval(x.low ** 2, x.high ** 2)
+const squareInterval = (x: Interval) => Interval(x.low ** 2, x.high ** 2)
 
-const squareRootInterval = x => Interval(Math.sqrt(x.low), Math.sqrt(x.high))
+const squareRootInterval = (x: Interval) =>
+  Interval(Math.sqrt(x.low), Math.sqrt(x.high))
 
-const isEmptyInterval = x => x.low > x.high
+const isEmptyInterval = (x: Interval) => x.low > x.high
 
-const intersectIntervals = (x, y) =>
+const intersectIntervals = (x: Interval, y: Interval) =>
   Interval(Math.max(x.low, y.low), Math.min(x.high, y.high))
 
-const ensureInsideInterval = (x, y) => {
+const ensureInsideInterval = (x: Interval, y: number) => {
   if (x.low <= y && y <= x.high) {
     return y
   }
@@ -63,7 +58,7 @@ merge
     return newRange
   })
   .assign([isNumber, isInterval], (content, increment) =>
-    ensureInsideInterval(increment, content)
+    ensureInsideInterval(increment, content),
   )
   .assign([isInterval, isNumber], ensureInsideInterval)
 
