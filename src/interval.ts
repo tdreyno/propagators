@@ -1,6 +1,6 @@
 import { merge, eq, multiply, divide, square, squareRoot } from "./multimethods"
 import { ContridictionError } from "./contridiction"
-import { isNumber } from "./util"
+import { flip, isNumber } from "./util"
 
 class Interval_ {
   constructor(public low: number, public high: number) {}
@@ -12,7 +12,7 @@ export type Interval = Interval_
 const isInterval = (value: unknown): value is Interval =>
   value instanceof Interval_
 
-const isEqualInterval = (x: Interval, y: Interval) =>
+const isEqualInterval = (x: Interval, y: Interval): boolean =>
   x.low === y.low && x.high === y.high
 
 const multiplyInterval = (x: Interval, y: Interval) =>
@@ -26,7 +26,7 @@ const squareInterval = (x: Interval) => Interval(x.low ** 2, x.high ** 2)
 const squareRootInterval = (x: Interval) =>
   Interval(Math.sqrt(x.low), Math.sqrt(x.high))
 
-const isEmptyInterval = (x: Interval) => x.low > x.high
+const isEmptyInterval = (x: Interval): boolean => x.low > x.high
 
 const intersectIntervals = (x: Interval, y: Interval) =>
   Interval(Math.max(x.low, y.low), Math.min(x.high, y.high))
@@ -57,10 +57,8 @@ merge
 
     return newRange
   })
-  .assign([isNumber, isInterval], (content, increment) =>
-    ensureInsideInterval(increment, content),
-  )
   .assign([isInterval, isNumber], ensureInsideInterval)
+  .assign([isNumber, isInterval], flip(ensureInsideInterval))
 
 eq.assign([isInterval, isInterval], isEqualInterval)
 

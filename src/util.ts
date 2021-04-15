@@ -16,6 +16,9 @@ export const isNumber = (value: unknown): value is number =>
 // Reverse predicate
 export const not = <T>(fn: (value: T) => boolean) => (value: T) => !fn(value)
 
+// Flip args
+export const flip = <A, B, C>(fn: (a: A, b: B) => C) => (b: B, a: A) => fn(a, b)
+
 // Range of numbers
 export const range = (a: number, b = 0) =>
   Array(Math.abs(b - a))
