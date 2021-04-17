@@ -30,11 +30,11 @@ describe("building-height", () => {
         t,
         h,
       )(() => {
-        const g = Cell<Interval>()
-        const [oneHalf, tSquared, gtSquared] = cells(3)
+        const [tSquared, gtSquared] = cells(2)
 
-        constant(Interval(9.789, 9.832))(g)
-        constant(1 / 2)(oneHalf)
+        const g = constant(Interval(9.789, 9.832))
+        const oneHalf = constant(1 / 2)
+
         quadratic(t)(tSquared)
         product(g, tSquared)(gtSquared)
         product(oneHalf, gtSquared)(h)

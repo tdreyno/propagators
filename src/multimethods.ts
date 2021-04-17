@@ -1,14 +1,4 @@
-import { isNumber } from "./util"
-
-const proto = Object.prototype
-const gpo = Object.getPrototypeOf
-
-function isPojo(obj: unknown) {
-  if (obj === null || typeof obj !== "object") {
-    return false
-  }
-  return gpo(obj) === proto
-}
+import { isNumber, isPojo } from "./util"
 
 class MultimethodError extends Error {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

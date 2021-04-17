@@ -24,3 +24,18 @@ export const range = (a: number, b = 0) =>
   Array(Math.abs(b - a))
     .fill(undefined)
     .map((_, i) => a + i)
+
+const proto = Object.prototype
+const gpo = Object.getPrototypeOf
+
+export const isPojo = (obj: unknown) => {
+  if (obj === null || typeof obj !== "object") {
+    return false
+  }
+
+  return gpo(obj) === proto
+}
+
+export type Showable = {
+  toString(): string
+}

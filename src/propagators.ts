@@ -21,7 +21,7 @@ const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
   inputs.forEach(addNeighbor(fn))
 
 // Wrap a function with a propagator
-const functionToPropagator = <Args extends unknown[], R>(
+export const functionToPropagator = <Args extends unknown[], R>(
   fn: (...args: Args) => R,
   name = "Unknown",
 ) => (...inputs: { [K in keyof Args]: Cell<Args[K]> }) => (
@@ -62,12 +62,7 @@ export const squareRooter = functionToPropagator(
 )
 
 // A propagator that always returns the same value
-export const constant = <T>(content: T) => (output: Cell<unknown>) =>
-  functionToPropagator(
-    a => a,
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    `constant(${content})`,
-  )(Cell(content))(output)
+export const constant = <T>(content: T): Cell<T> => Cell<T>(content)
 
 // if/else in propagator form
 export const conditional = <T>(
