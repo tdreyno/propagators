@@ -1,6 +1,7 @@
 import { Nothing, isNothing } from "./nothing"
 import { merge, eq } from "./multimethods"
-import { log, zipNWith, range } from "./util"
+import { log, range } from "./util"
+import { zipNWith } from "./propagators"
 
 export type Neighbor = () => void
 

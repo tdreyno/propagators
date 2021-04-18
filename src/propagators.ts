@@ -6,7 +6,7 @@ import {
   square,
   squareRoot,
 } from "./multimethods"
-import { isNothing } from "./nothing"
+import { isNothing, Nothing } from "./nothing"
 import {
   addNeighbor,
   isEmpty,
@@ -15,10 +15,26 @@ import {
   Cell,
   Neighbor,
 } from "./cell"
-import { zipNWith } from "./util"
+import { log } from "./util"
 
 export const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
   inputs.forEach(addNeighbor(fn))
+
+export const zipNWith = <Args extends unknown[], R>(
+  fn: (...args: Args) => R,
+) => (...inputs: { [K in keyof Args]: Cell<Args[K]> }) => ({
+  into(output: Cell<R>): void {
+    propagator(() => {
+      const values = inputs.map(content)
+      log("\tHas values", values)
+
+      const result = values.some(isNothing) ? Nothing : fn(...(values as Args))
+      log("\tResult", result)
+
+      addContent(result, output)
+    }, inputs)
+  },
+})
 
 export const adder = zipNWith(add.call)
 export const subtractor = zipNWith(subtract.call)

@@ -1,7 +1,3 @@
-import { isNothing, Nothing } from "./nothing"
-import { addContent, Cell, content } from "./cell"
-import { propagator } from "./propagators"
-
 const DEBUG = false
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,19 +39,3 @@ export const isPojo = (obj: unknown) => {
 export type Showable = {
   toString(): string
 }
-
-export const zipNWith = <Args extends unknown[], R>(
-  fn: (...args: Args) => R,
-) => (...inputs: { [K in keyof Args]: Cell<Args[K]> }) => ({
-  into(output: Cell<R>): void {
-    propagator(() => {
-      const values = inputs.map(content)
-      log("\tHas values", values)
-
-      const result = values.some(isNothing) ? Nothing : fn(...(values as Args))
-      log("\tResult", result)
-
-      addContent(result, output)
-    }, inputs)
-  },
-})
