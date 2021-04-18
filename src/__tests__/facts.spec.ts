@@ -21,9 +21,7 @@ describe("facts", () => {
 
     const facts: Facts = objects.reduce(
       (facts: Facts, obj: any) =>
-        facts.concat(
-          pojoToFacts(obj["person"], () => obj["person"]["cspanid"]),
-        ),
+        facts.union(pojoToFacts(obj["person"], () => obj["person"]["cspanid"])),
       Facts(),
     )
 

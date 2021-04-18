@@ -31,7 +31,10 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   private byKey_: Map<K, Facts_<E, K, V>> = new Map()
   private byValue_: Map<V, Facts_<E, K, V>> = new Map()
 
-  constructor(facts: Array<Fact<E, K, V>> = [], private readonly = false) {
+  constructor(
+    facts: Array<Fact<E, K, V>> | Set<Fact<E, K, V>> = [],
+    private readonly = false,
+  ) {
     facts.forEach(this.addFact_)
   }
 
@@ -75,7 +78,13 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
     return this.facts.size
   }
 
-  concat<E2, K2 extends string, V2>(
+  union<E2, K2 extends string, V2>(
+    b: Facts<E2, K2, V2>,
+  ): Facts<E | E2, K | K2, V | V2> {
+    return union(this, b)
+  }
+
+  intersection<E2, K2 extends string, V2>(
     b: Facts<E2, K2, V2>,
   ): Facts<E | E2, K | K2, V | V2> {
     return Facts<E | E2, K | K2, V | V2>([...this.facts, ...b.facts])
@@ -121,7 +130,6 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   hasFact(fact: Fact<E, K, V>) {
     return this.facts.has(fact)
   }
-
   private addFact_ = (fact: Fact<E, K, V>): Fact<E, K, V> => {
     if (this.readonly) {
       throw new Error("Cannot add fact readonly Facts")
@@ -169,7 +177,19 @@ export type Facts<
 
 const isFacts = (value: unknown): value is Facts => value instanceof Facts_
 
-merge.assign([isFacts, isFacts], (a, b) => a.concat(b))
+export const union = <E, K extends string, V, E2, K2 extends string, V2>(
+  a: Facts<E, K, V>,
+  b: Facts<E2, K2, V2>,
+): Facts<E | E2, K | K2, V | V2> =>
+  Facts<E | E2, K | K2, V | V2>([...a.facts, ...b.facts])
+
+export const intersection = <E, K extends string, V>(
+  a: Facts<E, K, V>,
+  b: Facts<E, K, V>,
+): Facts<E, K, V> =>
+  Facts<E, K, V>(Array.from(a.facts).filter(f => b.hasFact(f)))
+
+merge.assign([isFacts, isFacts], (a, b) => a.union(b))
 
 // Singleton
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
