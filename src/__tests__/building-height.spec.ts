@@ -15,14 +15,14 @@ import {
 describe("building-height", () => {
   test("test", () => {
     const product = (x: Cell, y: Cell) => (total: Cell) => {
-      multiplier(x, y)(total)
-      divider(total, x)(y)
-      divider(total, y)(x)
+      multiplier(x, y).into(total)
+      divider(total, x).into(y)
+      divider(total, y).into(x)
     }
 
     const quadratic = (x: Cell) => (xSquared: Cell) => {
-      squarer(x)(xSquared)
-      squareRooter(xSquared)(x)
+      squarer(x).into(xSquared)
+      squareRooter(xSquared).into(x)
     }
 
     const fallDuration = (t: Cell, h: Cell) =>

@@ -1,6 +1,6 @@
 import { Nothing, isNothing } from "./nothing"
 import { merge, eq } from "./multimethods"
-import { log, range } from "./util"
+import { log, zipNWith, range } from "./util"
 
 export type Neighbor = () => void
 
@@ -8,6 +8,10 @@ class Cell_<T = unknown> {
   neighbors = new Set<Neighbor>()
 
   constructor(public content: T | typeof Nothing = Nothing) {}
+
+  map<R>(fn: (content: T) => R): { into(output: Cell<R>): void } {
+    return zipNWith(fn)(this)
+  }
 }
 
 // Make a new, empty cell. Must pass generic for future type.

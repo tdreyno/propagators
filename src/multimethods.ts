@@ -24,7 +24,7 @@ class Multimethod<Args extends unknown[]> {
 
   constructor(public name = "Unknown") {}
 
-  call(...args: Args): unknown {
+  call = (...args: Args): unknown => {
     for (const [matcher, fn] of this.overloads_) {
       if (args.every((arg, i) => matcher[i](arg))) {
         return fn(...args)

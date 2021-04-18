@@ -5,7 +5,7 @@ describe("propagators", () => {
   test("addition", () => {
     const [a, b, c] = cells(3)
 
-    adder(a, b)(c)
+    adder(a, b).into(c)
 
     addContent(1, a)
     addContent(2, b)

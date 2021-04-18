@@ -6,7 +6,7 @@ import {
   square,
   squareRoot,
 } from "./multimethods"
-import { isNothing, Nothing } from "./nothing"
+import { isNothing } from "./nothing"
 import {
   addNeighbor,
   isEmpty,
@@ -15,51 +15,17 @@ import {
   Cell,
   Neighbor,
 } from "./cell"
-import { log } from "./util"
+import { zipNWith } from "./util"
 
-const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
+export const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
   inputs.forEach(addNeighbor(fn))
 
-// Wrap a function with a propagator
-export const functionToPropagator = <Args extends unknown[], R>(
-  fn: (...args: Args) => R,
-  name = "Unknown",
-) => (...inputs: { [K in keyof Args]: Cell<Args[K]> }) => (
-  output: Cell<R>,
-): void =>
-  propagator(() => {
-    log(`Notified ${name}`)
-
-    const values = inputs.map(content)
-    log("\tHas values", values)
-
-    const result = values.some(isNothing) ? Nothing : fn(...(values as Args))
-    log("\tResult", result)
-
-    addContent(result, output)
-  }, inputs)
-
-export const adder = functionToPropagator(add.call.bind(add), "add(a, b)")
-export const subtractor = functionToPropagator(
-  subtract.call.bind(subtract),
-  "subtract(a, b)",
-)
-export const multiplier = functionToPropagator(
-  multiply.call.bind(multiply),
-  "multiply(a, b)",
-)
-export const divider = functionToPropagator(
-  divide.call.bind(divide),
-  "divide(a, b)",
-)
-export const squarer = functionToPropagator(
-  square.call.bind(square),
-  "square(a)",
-)
-export const squareRooter = functionToPropagator(
-  squareRoot.call.bind(squareRoot),
-  "squareRoot(a)",
-)
+export const adder = zipNWith(add.call)
+export const subtractor = zipNWith(subtract.call)
+export const multiplier = zipNWith(multiply.call)
+export const divider = zipNWith(divide.call)
+export const squarer = zipNWith(square.call)
+export const squareRooter = zipNWith(squareRoot.call)
 
 // A propagator that always returns the same value
 export const constant = <T>(content: T): Cell<T> => Cell<T>(content)

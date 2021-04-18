@@ -32,7 +32,7 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   private byValue_: Map<V, Facts_<E, K, V>> = new Map()
 
   constructor(facts: Array<Fact<E, K, V>> = [], private readonly = false) {
-    facts.forEach(this.addFact_.bind(this))
+    facts.forEach(this.addFact_)
   }
 
   toString(): string {
@@ -40,10 +40,13 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   }
 
   add(entity: E, key: K, value: V): Fact<E, K, V> {
-    return (
-      this.get(entity, key, value) ??
-      this.addFact_(new Fact_<E, K, V>(entity, key, value))
-    )
+    const found = this.get(entity, key, value)
+
+    if (found !== undefined) {
+      return found
+    }
+
+    return this.addFact_(new Fact_<E, K, V>(entity, key, value))
   }
 
   isEmpty(): boolean {
@@ -86,22 +89,40 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   }
 
   lookupByEntity(entity: E): Facts_<E, K, V> {
-    return this.byEntity_.get(entity) ?? (EMPTY_FACTS as Facts_<E, K, V>)
+    const found = this.byEntity_.get(entity)
+
+    if (found !== undefined) {
+      return found
+    }
+
+    return EMPTY_FACTS as any
   }
 
   lookupByKey(key: K): Facts_<E, K, V> {
-    return this.byKey_.get(key) ?? (EMPTY_FACTS as Facts_<E, K, V>)
+    const found = this.byKey_.get(key)
+
+    if (found !== undefined) {
+      return found
+    }
+
+    return EMPTY_FACTS as any
   }
 
   lookupByValue(value: V): Facts_<E, K, V> {
-    return this.byValue_.get(value) ?? (EMPTY_FACTS as Facts_<E, K, V>)
+    const found = this.byValue_.get(value)
+
+    if (found !== undefined) {
+      return found
+    }
+
+    return EMPTY_FACTS as any
   }
 
   hasFact(fact: Fact<E, K, V>) {
     return this.facts.has(fact)
   }
 
-  private addFact_(fact: Fact<E, K, V>): Fact<E, K, V> {
+  private addFact_ = (fact: Fact<E, K, V>): Fact<E, K, V> => {
     if (this.readonly) {
       throw new Error("Cannot add fact readonly Facts")
     }

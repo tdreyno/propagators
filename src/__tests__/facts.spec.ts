@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
-import { Cell, constant, Facts, functionToPropagator, Showable } from "../index"
+import { Cell, Facts, Showable } from "../index"
 import { isNothing } from "../nothing"
 
 const DATA_SOURCE =
@@ -14,12 +14,6 @@ const pojoToFacts = <O extends Record<string, any>>(
     (facts, [key, value]) => (facts.add(getId(obj), key, value), facts),
     Facts(),
   )
-
-const selectByKey = (facts: Facts, key: string): Facts => facts.lookupByKey(key)
-const selectorByKey = functionToPropagator(
-  selectByKey,
-  "selectByKey(facts, key)",
-)
 
 describe("facts", () => {
   test("senators", async () => {
@@ -40,10 +34,13 @@ describe("facts", () => {
     const senators = Cell(facts)
     const result = Cell<Facts>()
 
-    selectorByKey(senators, constant("name"))(result)
+    const byKey = (key: string) => (facts: Facts): Facts =>
+      facts.lookupByKey(key)
+
+    senators.map(byKey("name")).into(result)
 
     if (!isNothing(result.content)) {
-      // console.log(Array.from(result.content.facts).map(f => f.toString()))
+      console.log(Array.from(result.content.facts).map(f => f.toString()))
     }
   })
 })
