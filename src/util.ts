@@ -39,3 +39,12 @@ export const isPojo = (obj: unknown) => {
 export type Showable = {
   toString(): string
 }
+
+export const union = <T>(a: Set<T>, b: Set<T>): Set<T> =>
+  new Set<T>([...a, ...b])
+
+export const intersection = <T>(a: Set<T>, b: Set<T>): Set<T> =>
+  new Set<T>([...a].filter(x => b.has(x)))
+
+export const difference = <T>(a: Set<T>, b: Set<T>): Set<T> =>
+  new Set<T>([...a].filter(x => !b.has(x)))

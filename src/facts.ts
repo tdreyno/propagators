@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { eq, merge } from "./multimethods"
-import { Showable } from "./util"
+import { difference, intersection, Showable, union } from "./util"
 
 class Fact_<E extends Showable, K extends string, V extends Showable> {
   constructor(public entity: E, public key: K, public value: V) {}
@@ -27,9 +27,12 @@ eq.assign([isFact, isFact], isEqualFact)
 
 class Facts_<E extends Showable, K extends string, V extends Showable> {
   public facts: Set<Fact<E, K, V>> = new Set()
-  private byEntity_: Map<E, Facts_<E, K, V>> = new Map()
-  private byKey_: Map<K, Facts_<E, K, V>> = new Map()
-  private byValue_: Map<V, Facts_<E, K, V>> = new Map()
+  private entities: Map<E, Facts_<E, K, V>> = new Map()
+  private keys: Map<K, Facts_<E, K, V>> = new Map()
+  private values: Map<V, Facts_<E, K, V>> = new Map()
+  private entitiesSet: Set<E> = new Set()
+  private keysSet: Set<K> = new Set()
+  private valuesSet: Set<V> = new Set()
 
   constructor(
     facts: Array<Fact<E, K, V>> | Set<Fact<E, K, V>> = [],
@@ -56,49 +59,61 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
     return this.facts.size <= 0
   }
 
-  has(entity: E, key: K, value: V): boolean {
-    return !this.lookupByEntity(entity)
-      .lookupByKey(key)
-      .lookupByValue(value)
-      .isEmpty()
+  first(): Fact<E, K, V> | undefined {
+    return this.isEmpty() ? undefined : Array.from(this.facts)[0]
   }
 
   get(entity: E, key: K, value: V): Fact<E, K, V> | undefined {
-    return this.lookupByEntity(entity)
-      .lookupByKey(key)
-      .lookupByValue(value)
+    return this.lookup("entities", entity)
+      .lookup("keys", key)
+      .lookup("values", value)
       .first()
   }
 
-  first(): Fact<E, K, V> | undefined {
-    return Array.from(this.facts)[0]
+  has(entity: E, key: K, value: V): boolean {
+    return this.get(entity, key, value) !== undefined
   }
 
   size(): number {
     return this.facts.size
   }
 
-  union<E2, K2 extends string, V2>(
-    b: Facts<E2, K2, V2>,
-  ): Facts<E | E2, K | K2, V | V2> {
-    return union(this, b)
+  union(b: Facts<E, K, V>): Facts<E, K, V> {
+    return Facts(union(this.facts, b.facts))
   }
 
-  intersection<E2, K2 extends string, V2>(
-    b: Facts<E2, K2, V2>,
-  ): Facts<E | E2, K | K2, V | V2> {
-    return Facts<E | E2, K | K2, V | V2>([...this.facts, ...b.facts])
+  intersection(b: Facts<E, K, V>): Facts<E, K, V> {
+    return Facts(intersection(this.facts, b.facts))
+  }
+
+  difference(b: Facts<E, K, V>): Facts<E, K, V> {
+    return Facts(difference(this.facts, b.facts))
   }
 
   clear(): void {
     this.facts.clear()
-    this.byEntity_.clear()
-    this.byKey_.clear()
-    this.byValue_.clear()
+    this.entities.clear()
+    this.keys.clear()
+    this.values.clear()
   }
 
-  lookupByEntity(entity: E): Facts_<E, K, V> {
-    const found = this.byEntity_.get(entity)
+  lookup(by: "entities", x: E): Facts_<E, K, V>
+  lookup(by: "keys", x: K): Facts_<E, K, V>
+  lookup(by: "values", x: V): Facts_<E, K, V>
+  lookup(by: "entities" | "keys" | "values", x: any): Facts_<E, K, V> {
+    let found: Facts<E, K, V> | undefined
+
+    switch (by) {
+      case "entities":
+        found = this.entities.get(x)
+        break
+      case "keys":
+        found = this.keys.get(x)
+        break
+      case "values":
+        found = this.values.get(x)
+        break
+    }
 
     if (found !== undefined) {
       return found
@@ -107,29 +122,24 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
     return EMPTY_FACTS as any
   }
 
-  lookupByKey(key: K): Facts_<E, K, V> {
-    const found = this.byKey_.get(key)
-
-    if (found !== undefined) {
-      return found
+  set(by: "entities"): Set<E>
+  set(by: "keys"): Set<K>
+  set(by: "values"): Set<V>
+  set(by: "entities" | "keys" | "values"): Set<E | K | V> {
+    switch (by) {
+      case "entities":
+        return this.entitiesSet
+      case "keys":
+        return this.keysSet
+      case "values":
+        return this.valuesSet
     }
-
-    return EMPTY_FACTS as any
-  }
-
-  lookupByValue(value: V): Facts_<E, K, V> {
-    const found = this.byValue_.get(value)
-
-    if (found !== undefined) {
-      return found
-    }
-
-    return EMPTY_FACTS as any
   }
 
   hasFact(fact: Fact<E, K, V>) {
     return this.facts.has(fact)
   }
+
   private addFact_ = (fact: Fact<E, K, V>): Fact<E, K, V> => {
     if (this.readonly) {
       throw new Error("Cannot add fact readonly Facts")
@@ -137,25 +147,25 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
 
     this.facts.add(fact)
 
-    if (this.byEntity_.has(fact.entity)) {
+    if (this.entities.has(fact.entity)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.byEntity_.get(fact.entity)!.addFact_(fact)
+      this.entities.get(fact.entity)!.addFact_(fact)
     } else {
-      this.byEntity_.set(fact.entity, new Facts_())
+      this.entities.set(fact.entity, new Facts_())
     }
 
-    if (this.byKey_.has(fact.key)) {
+    if (this.keys.has(fact.key)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.byKey_.get(fact.key)!.addFact_(fact)
+      this.keys.get(fact.key)!.addFact_(fact)
     } else {
-      this.byKey_.set(fact.key, new Facts_())
+      this.keys.set(fact.key, new Facts_())
     }
 
-    if (this.byValue_.has(fact.value)) {
+    if (this.values.has(fact.value)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.byValue_.get(fact.value)!.addFact_(fact)
+      this.values.get(fact.value)!.addFact_(fact)
     } else {
-      this.byValue_.set(fact.value, new Facts_())
+      this.values.set(fact.value, new Facts_())
     }
 
     return fact
@@ -166,7 +176,7 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
 const EMPTY_FACTS = new Facts_(undefined, true)
 
 export const Facts = <E extends Showable, K extends string, V extends Showable>(
-  facts: Array<Fact<E, K, V>> = [],
+  facts: Array<Fact<E, K, V>> | Set<Fact<E, K, V>> = [],
 ) => new Facts_<E, K, V>(facts)
 
 export type Facts<
@@ -176,18 +186,6 @@ export type Facts<
 > = Facts_<E, K, V>
 
 const isFacts = (value: unknown): value is Facts => value instanceof Facts_
-
-export const union = <E, K extends string, V, E2, K2 extends string, V2>(
-  a: Facts<E, K, V>,
-  b: Facts<E2, K2, V2>,
-): Facts<E | E2, K | K2, V | V2> =>
-  Facts<E | E2, K | K2, V | V2>([...a.facts, ...b.facts])
-
-export const intersection = <E, K extends string, V>(
-  a: Facts<E, K, V>,
-  b: Facts<E, K, V>,
-): Facts<E, K, V> =>
-  Facts<E, K, V>(Array.from(a.facts).filter(f => b.hasFact(f)))
 
 merge.assign([isFacts, isFacts], (a, b) => a.union(b))
 

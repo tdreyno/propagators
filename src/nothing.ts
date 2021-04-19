@@ -1,13 +1,16 @@
 import { merge, eq } from "./multimethods"
 
-export const Nothing = Symbol("nothing")
+export class Nothing_ {}
+export const Nothing = new Nothing_()
+export type Nothing = Nothing_
 
 // Check if a value is equal to the special value "Nothing"
-export const isNothing = (value: unknown): value is typeof Nothing =>
-  value === Nothing
+export const isNothing = <T = unknown>(
+  value: Nothing_ | T,
+): value is Nothing_ => value instanceof Nothing_
 
 // Check if a value is not equal to the special value "Nothing"
-export const isAnything = (value: unknown): value is unknown =>
+export const isAnything = <T = unknown>(value: Nothing_ | T): value is T =>
   !isNothing(value)
 
 merge

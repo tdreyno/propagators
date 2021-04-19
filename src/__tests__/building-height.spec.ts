@@ -14,16 +14,20 @@ import {
 
 describe("building-height", () => {
   test("test", () => {
-    const product = (x: Cell, y: Cell) => (total: Cell) => {
-      multiplier(x, y).into(total)
-      divider(total, x).into(y)
-      divider(total, y).into(x)
-    }
+    const product = (x: Cell, y: Cell) => ({
+      into: (total: Cell) => {
+        multiplier(x, y).into(total)
+        divider(total, x).into(y)
+        divider(total, y).into(x)
+      },
+    })
 
-    const quadratic = (x: Cell) => (xSquared: Cell) => {
-      squarer(x).into(xSquared)
-      squareRooter(xSquared).into(x)
-    }
+    const quadratic = (x: Cell) => ({
+      into: (xSquared: Cell) => {
+        squarer(x).into(xSquared)
+        squareRooter(xSquared).into(x)
+      },
+    })
 
     const fallDuration = (t: Cell, h: Cell) =>
       compoundPropagator(
@@ -35,9 +39,9 @@ describe("building-height", () => {
         const g = constant(Interval(9.789, 9.832))
         const oneHalf = constant(1 / 2)
 
-        quadratic(t)(tSquared)
-        product(g, tSquared)(gtSquared)
-        product(oneHalf, gtSquared)(h)
+        quadratic(t).into(tSquared)
+        product(g, tSquared).into(gtSquared)
+        product(oneHalf, gtSquared).into(h)
       })
 
     const similarTriangles = (sBa: Cell, hBa: Cell, s: Cell, h: Cell) =>
@@ -48,8 +52,8 @@ describe("building-height", () => {
       )(() => {
         const ratio = Cell()
 
-        product(sBa, ratio)(hBa)
-        product(s, ratio)(h)
+        product(sBa, ratio).into(hBa)
+        product(s, ratio).into(h)
       })
 
     // Part 1
@@ -81,10 +85,10 @@ describe("building-height", () => {
       low: 44.51351351351351,
       high: 47.24276000000001,
     })
-    // expect(content(barometerHeight)).toEqual({
-    //   low: 0.3,
-    //   high: 0.3183938287795994,
-    // })
-    // expect(content(fallTime)).toEqual({ low: 3.0091234174691017, high: 3.1 })
+    expect(content(barometerHeight)).toEqual({
+      low: 0.3,
+      high: 0.3183938287795994,
+    })
+    expect(content(fallTime)).toEqual({ low: 3.0091234174691017, high: 3.1 })
   })
 })

@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
+import { addContent, content, isCell } from "../cell"
 import { Cell, Facts, Showable } from "../index"
-import { isNothing } from "../nothing"
+import { isAnything, isNothing } from "../nothing"
+import { constant, propagator } from "../propagators"
+import { intersection } from "../util"
 
 const DATA_SOURCE =
   "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=10"
@@ -29,16 +33,156 @@ describe("facts", () => {
 
     // console.log(facts.facts)
 
-    const senators = Cell(facts)
+    const root = Cell(facts)
     const result = Cell<Facts>()
 
     const byKey = (key: string) => (facts: Facts): Facts =>
-      facts.lookupByKey(key)
+      facts.lookup("keys", key)
 
-    senators.map(byKey("name")).into(result)
+    root.map(byKey("name")).into(result)
+
+    class Placeholder_ {}
+    type Placeholder = Placeholder_
+
+    const isPlaceholder = (v: unknown): v is Placeholder =>
+      v instanceof Placeholder_
+    const _ = new Placeholder_()
+
+    const isValue = <T>(v: unknown): v is T => !isPlaceholder(v) && !isCell(v)
+
+    type Query<E = any, K extends string = string, V = any> = [
+      e: E | Placeholder | Cell<Set<E>>,
+      k: K | Placeholder | Cell<Set<K>>,
+      v: V | Placeholder | Cell<Set<V>>,
+    ]
+
+    const toCell = <T>(x: T | Placeholder | Cell<Set<T>>): Cell<Set<T>> => {
+      if (isCell(x)) {
+        return x
+      }
+
+      if (isValue<T>(x)) {
+        return constant(
+          new Set<T>([x]),
+        )
+      }
+
+      return Cell<Set<T>>()
+    }
+
+    const Q = <E = any, K extends string = string, V = any>(
+      e: E | Placeholder | Cell<Set<E>>,
+      k: K | Placeholder | Cell<Set<K>>,
+      v: V | Placeholder | Cell<Set<V>>,
+    ): Cell<Facts> => {
+      // const result = Cell<Facts>()
+      const eCell = toCell(e)
+      const kCell = toCell(k)
+      const vCell = toCell(v)
+
+      // _ === Bottom type (empty set), we know nothing
+
+      // [Cell<E>, constant<K>, constant<V>]
+
+      const lookupSet = <T>(
+        rootFacts: Facts,
+        set: Set<T>,
+        getter: "entities" | "keys" | "values",
+      ) =>
+        Array.from(set)
+          .map(t => rootFacts.lookup(getter as any, t))
+          .reduce((acc, f) => Facts([...acc.facts, ...f.facts]), Facts())
+
+      const relationship = <T>(
+        cell: Cell<Set<T>>,
+        getter: "entities" | "keys" | "values",
+        notifiers: {
+          entities?: Cell<Set<E>>
+          keys?: Cell<Set<K>>
+          values?: Cell<Set<V>>
+        },
+      ) => {
+        propagator(() => {
+          const rootFacts = content(root)
+          const set = content(cell)
+
+          if (isAnything(rootFacts) && isAnything(set)) {
+            const subSet = lookupSet(rootFacts, set, getter)
+
+            Object.entries(notifiers).forEach(([key, value]) => {
+              addContent(subSet.set(key as any), value!)
+            })
+          }
+        }, [root, cell])
+      }
+
+      relationship<E>(eCell, "entities", {
+        keys: kCell,
+        values: vCell,
+      })
+
+      relationship<K>(kCell, "keys", {
+        entities: eCell,
+        values: vCell,
+      })
+
+      relationship<V>(vCell, "values", {
+        entities: eCell,
+        keys: kCell,
+      })
+
+      const output = Cell<Facts>()
+
+      propagator(() => {
+        const rootFacts = content(root)
+        const e = content(eCell)
+        const k = content(kCell)
+        const v = content(vCell)
+
+        if (
+          isAnything(rootFacts) &&
+          isAnything(e) &&
+          isAnything(k) &&
+          isAnything(v)
+        ) {
+          const eSubSet = lookupSet(rootFacts, e, "entities").facts
+          const kSubSet = lookupSet(rootFacts, k, "keys").facts
+          const vSubSet = lookupSet(rootFacts, v, "values").facts
+          const possibilities = intersection(
+            intersection(eSubSet, kSubSet),
+            vSubSet,
+          )
+
+          addContent(Facts(possibilities), output)
+        }
+      }, [eCell, kCell, vCell])
+
+      return output
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const query = (...statements: Query[]): void => {
+      return
+      return statements.forEach(q => Q(...q))
+    }
+
+    const $ = new Proxy<Record<string, Cell>>(
+      {},
+      {
+        get: function (obj, prop: string) {
+          if (!(prop in obj)) {
+            obj[prop] = Cell()
+          }
+
+          return obj[prop]
+        },
+      },
+    )
+
+    query([$.id, _, _], [$.id, "gender", "male"], [$.id, "name", $.name])
 
     if (!isNothing(result.content)) {
-      console.log(Array.from(result.content.facts).map(f => f.toString()))
+      // console.log(Array.from(result.content.facts).map(f => f.toString()))
     }
   })
 })

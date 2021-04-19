@@ -8,19 +8,36 @@ export type Neighbor = () => void
 class Cell_<T = unknown> {
   neighbors = new Set<Neighbor>()
 
-  constructor(public content: T | typeof Nothing = Nothing) {}
+  constructor(public content: T | Nothing = Nothing) {}
 
   map<R>(fn: (content: T) => R): { into(output: Cell<R>): void } {
     return zipNWith(fn)(this)
   }
+
+  map2<B, R>(
+    b: Cell<B>,
+    fn: (a: T, b: B) => R,
+  ): { into(output: Cell<R>): void } {
+    return zipNWith(fn)(this, b)
+  }
+
+  map3<B, C, R>(
+    b: Cell<B>,
+    c: Cell<C>,
+    fn: (a: T, b: B, c: C) => R,
+  ): { into(output: Cell<R>): void } {
+    return zipNWith(fn)(this, b, c)
+  }
 }
 
 // Make a new, empty cell. Must pass generic for future type.
-export const Cell = <T>(content: T | typeof Nothing = Nothing) =>
-  new Cell_<T>(content)
+export const Cell = <T>(content: T | Nothing = Nothing) => new Cell_<T>(content)
 export type Cell<T = unknown> = Cell_<T>
 
-export const cells = (num: number) => range(num).map(() => Cell<unknown>())
+export const isCell = (v: unknown): v is Cell => v instanceof Cell_
+
+export const cells = <T = unknown>(num: number) =>
+  range(num).map(() => Cell<T>())
 
 // Get the content of a cell.
 export const content = <T>({ content }: Cell<T>) => content
@@ -33,7 +50,7 @@ const alertPropagators = (neighbors: Set<Neighbor>) =>
   neighbors.forEach(n => n())
 
 // Add content to the cell.
-export const addContent = <T>(content: T | typeof Nothing, cell: Cell<T>) => {
+export const addContent = <T>(content: T | Nothing, cell: Cell<T>) => {
   log("Adding content", content)
 
   const answer = merge.call(cell.content, content) as T
