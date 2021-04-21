@@ -3,25 +3,7 @@ import { eq, merge, show } from "./multimethods"
 import { isNothing } from "./nothing"
 import { Showable } from "./showable"
 import { difference, intersection, isSet, union } from "./util"
-
-class Fact_<E extends Showable, K extends string, V extends Showable> {
-  constructor(public entity: E, public key: K, public value: V) {}
-}
-
-export type Fact<
-  E extends Showable = any,
-  K extends string = string,
-  V extends Showable = any
-> = Fact_<E, K, V>
-
-const isFact = (value: unknown): value is Fact => value instanceof Fact_
-
-const isEqualFact = (x: Fact, y: Fact): boolean =>
-  !!eq.call(x.entity, y.entity) &&
-  x.key === y.key &&
-  !!eq.call(x.value, y.value)
-
-eq.assign([isFact, isFact], isEqualFact)
+import { Fact } from "./fact"
 
 class Facts_<E extends Showable, K extends string, V extends Showable> {
   public facts: Set<Fact<E, K, V>> = new Set()
@@ -66,7 +48,7 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
       return
     }
 
-    this.addFact_(new Fact_<E, K, V>(entity, key, value))
+    this.addFact_(Fact(entity, key, value))
   }
 
   isEmpty(): boolean {
@@ -288,16 +270,6 @@ const isFacts = (value: unknown): value is Facts => value instanceof Facts_
 merge.assign([isFacts, isFacts], (a, b) => a.union(b))
 show.assign([isFacts], facts => `Facts<${facts.size()}>`)
 
-// Singleton
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ALL_FACTS = new Facts_<any, string, any>()
-
-export const Fact = <E extends Showable, K extends string, V extends Showable>(
-  entity: E,
-  key: K,
-  value: V,
-) => ALL_FACTS.add(entity, key, value)
-
 merge.assign([isSet, isSet], intersection)
 merge.assign([isSet, isNothing], a => a)
 merge.assign([isNothing, isSet], (_, b) => b)
@@ -306,11 +278,4 @@ merge.assign([isNothing, isSet], (_, b) => b)
 eq.assign(
   [isSet, isSet],
   (a, b) => a.size === b.size && [...a].every(value => b.has(value)),
-)
-
-show.assign(
-  [isFact],
-  ({ entity, key, value }) =>
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    `Fact<${show.call(entity)}, ${show.call(key)}, ${show.call(value)}>`,
 )

@@ -1,5 +1,6 @@
 export * from "./cell"
 export * from "./contridiction"
+export * from "./fact"
 export * from "./facts"
 export * from "./interval"
 export * from "./multimethods"
