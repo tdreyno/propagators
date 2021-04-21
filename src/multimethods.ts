@@ -14,7 +14,7 @@ class MultimethodError extends Error {
 type Matcher<T = unknown> = (value: unknown) => value is T
 type MatcherType<T> = T extends Matcher<infer U> ? U : never
 
-class Multimethod<Args extends unknown[]> {
+class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
   private overloads_: Array<
     [
       { [K in keyof Args]: Matcher<unknown> },
@@ -24,10 +24,10 @@ class Multimethod<Args extends unknown[]> {
 
   constructor(public name = "Unknown") {}
 
-  call = (...args: Args): unknown => {
+  call = (...args: Args): R => {
     for (const [matcher, fn] of this.overloads_) {
       if (args.every((arg, i) => matcher[i](arg))) {
-        return fn(...args)
+        return fn(...args) as R
       }
     }
 
@@ -67,12 +67,12 @@ class Multimethod<Args extends unknown[]> {
   }
 }
 
-export const merge = new Multimethod<[unknown, unknown]>("merge").assign(
+export const merge = new Multimethod("merge").assign(
   [isNumber, isNumber],
   (x, y) => x + y,
 )
 
-export const eq = new Multimethod("eq")
+export const eq = new Multimethod<boolean>("eq")
 
 export const add = new Multimethod("add").assign(
   [isNumber, isNumber],
@@ -100,3 +100,5 @@ export const squareRoot = new Multimethod("squareRoot").assign(
   [isNumber],
   Math.sqrt,
 )
+
+export const show = new Multimethod<string>("show")

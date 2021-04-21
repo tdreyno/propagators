@@ -1,4 +1,4 @@
-import { merge, eq } from "./multimethods"
+import { merge, eq, show } from "./multimethods"
 
 export class Nothing_ {}
 export const Nothing = new Nothing_()
@@ -22,3 +22,5 @@ eq.assign([isNothing, isNothing], () => true)
   .assign([isAnything, isNothing], () => false)
   .assign([isNothing, isAnything], () => false)
   .assign([isAnything, isAnything], (a, b) => a === b)
+
+show.assign([isNothing], () => "Nothing")

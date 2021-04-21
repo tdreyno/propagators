@@ -15,7 +15,7 @@ import {
   Cell,
   Neighbor,
 } from "./cell"
-import { log } from "./util"
+// import { log } from "./util"
 
 export const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
   inputs.forEach(addNeighbor(fn))
@@ -26,10 +26,10 @@ export const zipNWith = <Args extends unknown[], R>(
   into(output: Cell<R>): void {
     propagator(() => {
       const values = inputs.map(content)
-      log("\tHas values", values)
+      // log("\tHas values", values)
 
       const result = values.some(isNothing) ? Nothing : fn(...(values as Args))
-      log("\tResult", result)
+      // log("\tResult", result)
 
       addContent(result, output)
     }, inputs)

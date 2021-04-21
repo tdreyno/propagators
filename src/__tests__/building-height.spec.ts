@@ -12,7 +12,7 @@ import {
   Interval,
 } from "../index"
 
-describe("building-height", () => {
+describe.skip("building-height", () => {
   test("test", () => {
     const product = (x: Cell, y: Cell) => ({
       into: (total: Cell) => {

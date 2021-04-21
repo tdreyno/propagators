@@ -1,14 +1,3 @@
-const DEBUG = false
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const log = (...args: any[]) => {
-  if (!DEBUG) {
-    return
-  }
-
-  console.log(...args)
-}
-
 // Check if value is a number
 export const isNumber = (value: unknown): value is number =>
   typeof value === "number" && isFinite(value)
@@ -36,10 +25,6 @@ export const isPojo = (obj: unknown) => {
   return gpo(obj) === proto
 }
 
-export type Showable = {
-  toString(): string
-}
-
 export const union = <T>(a: Set<T>, b: Set<T>): Set<T> =>
   new Set<T>([...a, ...b])
 
@@ -48,3 +33,9 @@ export const intersection = <T>(a: Set<T>, b: Set<T>): Set<T> =>
 
 export const difference = <T>(a: Set<T>, b: Set<T>): Set<T> =>
   new Set<T>([...a].filter(x => !b.has(x)))
+
+export const isSet = (value: unknown): value is Set<unknown> =>
+  value instanceof Set
+
+export const isString = (x: unknown): x is string =>
+  Object.prototype.toString.call(x) === "[object String]"

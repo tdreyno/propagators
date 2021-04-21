@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
-import { addContent, content, isCell } from "../cell"
-import { Cell, Facts, Showable } from "../index"
-import { isAnything, isNothing } from "../nothing"
-import { constant, propagator } from "../propagators"
-import { intersection } from "../util"
+import {
+  addContent,
+  content,
+  isCell,
+  Cell,
+  Facts,
+  Showable,
+  isAnything,
+  constant,
+  propagator,
+  intersection,
+  log,
+  Fact,
+} from "../index"
 
 const DATA_SOURCE =
   "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=10"
@@ -19,14 +28,16 @@ const pojoToFacts = <O extends Record<string, any>>(
     Facts(),
   )
 
+const EMPTY_SET = new Set<Fact>()
+
 const lookupSet = <T>(
   rootFacts: Facts,
   set: Set<T>,
   getter: "entities" | "keys" | "values",
 ) =>
   Array.from(set)
-    .map(t => rootFacts.lookup(getter as any, t))
-    .reduce((acc, f) => Facts([...acc.facts, ...f.facts]), Facts())
+    .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
+    .reduce((acc, f) => Facts([...acc.facts, ...f]), Facts())
 
 const relationship = <T, E, K, V>(
   root: Cell<Facts>,
@@ -39,13 +50,20 @@ const relationship = <T, E, K, V>(
   },
 ) =>
   propagator(() => {
-    const rootFacts = content(root)
-    const set = content(cell)
+    const rootFacts = content(root) as Facts
+    const set = content(cell) as Set<T>
 
     if (isAnything(rootFacts) && isAnything(set)) {
       const subSet = lookupSet(rootFacts, set, getter)
 
+      log(`relationship<${getter}>`, "root", rootFacts, set, subSet)
+
+      if (getter === "values" && subSet.isEmpty()) {
+        log("subSetFacts", subSet.facts)
+      }
+
       Object.entries(notifiers).forEach(([key, value]) => {
+        log(key, subSet.set(key as any))
         addContent(subSet.set(key as any), value!)
       })
     }
@@ -56,7 +74,7 @@ type Placeholder = Placeholder_
 
 const isPlaceholder = (v: unknown): v is Placeholder =>
   v instanceof Placeholder_
-const _ = new Placeholder_()
+// const _ = new Placeholder_()
 
 const isValue = <T>(v: unknown): v is T => !isPlaceholder(v) && !isCell(v)
 
@@ -84,7 +102,8 @@ const Q = <E = any, K extends string = string, V = any>(
   e: E | Placeholder | Cell<Set<E>>,
   k: K | Placeholder | Cell<Set<K>>,
   v: V | Placeholder | Cell<Set<V>>,
-) => (root: Cell<Facts>): Cell<Facts> => {
+  // ) => (root: Cell<Facts>): Cell<Facts> => {
+) => (root: Cell<Facts>) => {
   // const result = Cell<Facts>()
   const eCell = toCell(e)
   const kCell = toCell(k)
@@ -105,6 +124,7 @@ const Q = <E = any, K extends string = string, V = any>(
     keys: kCell,
   })
 
+  return
   const output = Cell<Facts>()
 
   propagator(() => {
@@ -137,7 +157,7 @@ const Q = <E = any, K extends string = string, V = any>(
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const query = (fn: ($: Record<string, Cell>) => Query[]) => (
   root: Cell<Facts>,
-): void => {
+): Record<string, Cell<unknown>> => {
   const $ = new Proxy<Record<string, Cell>>(
     {},
     {
@@ -151,8 +171,9 @@ const query = (fn: ($: Record<string, Cell>) => Query[]) => (
     },
   )
 
-  return
-  return fn($).forEach(q => Q(...q)(root))
+  fn($).forEach(q => Q(...q)(root))
+
+  return $
 }
 
 describe("facts", () => {
@@ -170,21 +191,22 @@ describe("facts", () => {
     // console.log(facts.facts)
 
     const root = Cell(facts)
-    const result = Cell<Facts>()
+    // const result = Cell<Facts>()
 
-    const byKey = (key: string) => (facts: Facts): Facts =>
-      facts.lookup("keys", key)
+    // const byKey = (key: string) => (facts: Facts): Facts =>
+    //   facts.lookup("keys", key)
 
-    root.map(byKey("name")).into(result)
+    // root.map(byKey("name")).into(result)
 
-    query($ => [
-      [$.id, _, _],
+    // if (!isNothing(result.content)) {
+    //   // console.log(Array.from(result.content.facts).map(f => f.toString()))
+    // }
+
+    const { names } = query($ => [
       [$.id, "gender", "male"],
-      [$.id, "name", $.name],
+      [$.id, "name", $.names],
     ])(root)
 
-    if (!isNothing(result.content)) {
-      // console.log(Array.from(result.content.facts).map(f => f.toString()))
-    }
+    console.log("male names", content(names))
   })
 })

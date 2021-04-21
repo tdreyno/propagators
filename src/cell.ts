@@ -1,7 +1,8 @@
 import { Nothing, isNothing } from "./nothing"
 import { merge, eq } from "./multimethods"
-import { log, range } from "./util"
+import { isSet, range } from "./util"
 import { zipNWith } from "./propagators"
+import { log } from "./log"
 
 export type Neighbor = () => void
 
@@ -11,6 +12,7 @@ class Cell_<T = unknown> {
   constructor(public content: T | Nothing = Nothing) {}
 
   map<R>(fn: (content: T) => R): { into(output: Cell<R>): void } {
+    log("map", fn)
     return zipNWith(fn)(this)
   }
 
@@ -18,6 +20,7 @@ class Cell_<T = unknown> {
     b: Cell<B>,
     fn: (a: T, b: B) => R,
   ): { into(output: Cell<R>): void } {
+    log("map2", fn)
     return zipNWith(fn)(this, b)
   }
 
@@ -26,6 +29,7 @@ class Cell_<T = unknown> {
     c: Cell<C>,
     fn: (a: T, b: B, c: C) => R,
   ): { into(output: Cell<R>): void } {
+    log("map3", fn)
     return zipNWith(fn)(this, b, c)
   }
 }
@@ -51,10 +55,14 @@ const alertPropagators = (neighbors: Set<Neighbor>) =>
 
 // Add content to the cell.
 export const addContent = <T>(content: T | Nothing, cell: Cell<T>) => {
-  log("Adding content", content)
+  // log("Adding new content", content)
 
   const answer = merge.call(cell.content, content) as T
-  log("Merge", cell.content, content, answer)
+  log("Merge:", cell.content, "&", content, "=", answer)
+
+  if (isSet(content) && content.size === 0) {
+    throw new Error("derp")
+  }
 
   if (eq.call(answer, cell.content)) {
     log("Was equal")
