@@ -1,6 +1,6 @@
 import { Nothing, isNothing } from "./nothing"
 import { merge, eq } from "./multimethods"
-import { isSet, range } from "./util"
+import { range } from "./util"
 import { zipNWith } from "./propagators"
 import { log } from "./log"
 
@@ -60,9 +60,9 @@ export const addContent = <T>(content: T | Nothing, cell: Cell<T>) => {
   const answer = merge.call(cell.content, content) as T
   log("Merge:", cell.content, "&", content, "=", answer)
 
-  if (isSet(content) && content.size === 0) {
-    throw new Error("derp")
-  }
+  // if (isSet(content) && content.size === 0) {
+  //   throw new Error("derp")
+  // }
 
   if (eq.call(answer, cell.content)) {
     log("Was equal")

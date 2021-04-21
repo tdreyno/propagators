@@ -55,14 +55,18 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
     facts.forEach(this.addFact_)
   }
 
-  add(entity: E, key: K, value: V): Fact<E, K, V> {
+  add(entity: E, key: K, value: V): void {
     const found = this.get(entity, key, value)
 
     if (found !== undefined) {
-      return found
+      return
     }
 
-    return this.addFact_(new Fact_<E, K, V>(entity, key, value))
+    if (value === null || value === undefined) {
+      return
+    }
+
+    this.addFact_(new Fact_<E, K, V>(entity, key, value))
   }
 
   isEmpty(): boolean {

@@ -12,6 +12,8 @@ export const isShowable = (x: unknown): x is Showable =>
 show
   // .assign([isShowable], a => a.toString())
   .assign([isString], a => a)
+  .assign([(a): a is null => a === null], () => "null")
+  .assign([(a): a is undefined => a === undefined], () => "undefined")
   .assign([isNumber], a => a.toString())
   .assign(
     [isSet],

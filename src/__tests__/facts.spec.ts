@@ -14,10 +14,11 @@ import {
   intersection,
   log,
   Fact,
+  show,
 } from "../index"
 
 const DATA_SOURCE =
-  "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=10"
+  "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=100"
 
 const pojoToFacts = <O extends Record<string, any>>(
   obj: O,
@@ -180,13 +181,15 @@ describe("facts", () => {
   test("senators", async () => {
     const { objects } = await (await fetch(DATA_SOURCE)).json()
 
-    const facts: Facts = objects.reduce(
-      (facts: Facts, obj: any) =>
-        facts.union(pojoToFacts(obj["person"], () => obj["person"]["cspanid"])),
-      Facts(),
-    )
+    const facts: Facts = objects.reduce((facts: Facts, obj: any) => {
+      const { person, ...rest } = obj
 
-    expect(facts.size()).toBe(170)
+      return facts.union(
+        pojoToFacts({ ...rest, ...person }, () => person["cspanid"]),
+      )
+    }, Facts())
+
+    // expect(facts.size()).toBe(170)
 
     // console.log(facts.facts)
 
@@ -202,11 +205,22 @@ describe("facts", () => {
     //   // console.log(Array.from(result.content.facts).map(f => f.toString()))
     // }
 
+    //
+    // TODO: Figure out Sets with nulls
+    //
+
     const { names } = query($ => [
       [$.id, "gender", "male"],
       [$.id, "name", $.names],
     ])(root)
 
-    console.log("male names", content(names))
+    console.log("male names", show.call(content(names)))
+
+    const { twitters } = query($ => [
+      [$.id, "state", "OR"],
+      [$.id, "twitterid", $.twitters],
+    ])(root)
+
+    console.log("OR twitters", show.call(content(twitters)))
   })
 })
