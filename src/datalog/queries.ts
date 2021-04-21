@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Facts } from "./facts"
-import { addContent, Cell, content, isCell } from "./cell"
-import { isAnything } from "./nothing"
-import { log } from "./log"
-import { propagator, constant } from "./propagators"
-import { intersection } from "./util"
+import { addContent, Cell, content, isCell } from "../cell"
+import { isAnything, intersection } from "../datatypes/index"
+import { propagator, constant } from "../propagators"
 import { Fact } from "./fact"
+import { log } from "../log"
 
 const EMPTY_SET = new Set<Fact>()
 

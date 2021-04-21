@@ -1,12 +1,4 @@
-import {
-  add,
-  subtract,
-  multiply,
-  divide,
-  square,
-  squareRoot,
-} from "./multimethods"
-import { isNothing, Nothing } from "./nothing"
+import { isNothing, Nothing } from "./datatypes/index"
 import {
   addNeighbor,
   isEmpty,
@@ -15,7 +7,7 @@ import {
   Cell,
   Neighbor,
 } from "./cell"
-// import { log } from "./util"
+// import { log } from "./util/index"
 
 export const propagator = (fn: Neighbor, inputs: Array<Cell>) =>
   inputs.forEach(addNeighbor(fn))
@@ -35,13 +27,6 @@ export const zipNWith = <Args extends unknown[], R>(
     }, inputs)
   },
 })
-
-export const adder = zipNWith(add.call)
-export const subtractor = zipNWith(subtract.call)
-export const multiplier = zipNWith(multiply.call)
-export const divider = zipNWith(divide.call)
-export const squarer = zipNWith(square.call)
-export const squareRooter = zipNWith(squareRoot.call)
 
 // A propagator that always returns the same value
 export const constant = <T>(content: T): Cell<T> => Cell<T>(content)

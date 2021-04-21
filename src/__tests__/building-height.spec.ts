@@ -1,8 +1,4 @@
 import {
-  multiplier,
-  divider,
-  squarer,
-  squareRooter,
   compoundPropagator,
   constant,
   cells,
@@ -10,9 +6,23 @@ import {
   Cell,
   content,
   Interval,
+  zipNWith,
+  add,
+  divide,
+  multiply,
+  square,
+  squareRoot,
+  subtract,
 } from "../index"
 
-describe.skip("building-height", () => {
+export const adder = zipNWith(add.call)
+export const subtractor = zipNWith(subtract.call)
+export const multiplier = zipNWith(multiply.call)
+export const divider = zipNWith(divide.call)
+export const squarer = zipNWith(square.call)
+export const squareRooter = zipNWith(squareRoot.call)
+
+describe("building-height", () => {
   test("test", () => {
     const product = (x: Cell, y: Cell) => ({
       into: (total: Cell) => {

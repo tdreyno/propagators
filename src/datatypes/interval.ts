@@ -1,6 +1,13 @@
-import { merge, eq, multiply, divide, square, squareRoot } from "./multimethods"
-import { ContridictionError } from "./contridiction"
-import { flip, isNumber } from "./util"
+import {
+  merge,
+  eq,
+  multiply,
+  divide,
+  square,
+  squareRoot,
+} from "../multimethods/index"
+import { flip, ContridictionError } from "../util/index"
+import { isNumber } from "./number"
 
 class Interval_ {
   constructor(public low: number, public high: number) {}

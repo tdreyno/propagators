@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { eq, show } from "./multimethods"
-import { Showable } from "./showable"
+import { eq, show } from "../multimethods/index"
+import { Showable } from "../util/index"
 
 class Fact_<E extends Showable, K extends string, V extends Showable> {
   constructor(public entity: E, public key: K, public value: V) {}

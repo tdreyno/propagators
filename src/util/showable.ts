@@ -1,5 +1,4 @@
-import { show } from "./multimethods"
-import { isNumber, isSet, isString } from "./util"
+import { show } from "../multimethods/index"
 
 export type Showable = {
   toString(): string
@@ -11,14 +10,5 @@ export const isShowable = (x: unknown): x is Showable =>
 
 show
   // .assign([isShowable], a => a.toString())
-  .assign([isString], a => a)
   .assign([(a): a is null => a === null], () => "null")
   .assign([(a): a is undefined => a === undefined], () => "undefined")
-  .assign([isNumber], a => a.toString())
-  .assign(
-    [isSet],
-    set =>
-      `Set<${Array.from(set)
-        .map(a => show.call(a))
-        .join(", ")}>`,
-  )

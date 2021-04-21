@@ -1,6 +1,5 @@
-import { Nothing, isNothing } from "./nothing"
-import { merge, eq } from "./multimethods"
-import { range } from "./util"
+import { Nothing, isNothing } from "./datatypes/index"
+import { merge, eq } from "./multimethods/index"
 import { zipNWith } from "./propagators"
 import { log } from "./log"
 
@@ -78,3 +77,9 @@ export const addNeighbor = (neighbor: Neighbor) => (cell: Cell) => {
   cell.neighbors.add(neighbor)
   alertPropagators(new Set([neighbor]))
 }
+
+// Range of numbers
+const range = (a: number, b = 0) =>
+  Array(Math.abs(b - a))
+    .fill(undefined)
+    .map((_, i) => a + i)

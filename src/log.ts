@@ -1,4 +1,4 @@
-import { show } from "./multimethods"
+import { show } from "./multimethods/index"
 
 const DEBUG = false
 

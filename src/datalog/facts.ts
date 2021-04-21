@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { eq, merge, show } from "./multimethods"
-import { isNothing } from "./nothing"
-import { Showable } from "./showable"
-import { difference, intersection, isSet, union } from "./util"
+import { eq, merge, show } from "../multimethods/index"
+import {
+  difference,
+  intersection,
+  isNothing,
+  isSet,
+  union,
+} from "../datatypes/index"
+import { Showable } from "../util/index"
 import { Fact } from "./fact"
 
 class Facts_<E extends Showable, K extends string, V extends Showable> {

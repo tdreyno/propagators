@@ -1,5 +1,3 @@
-import { isNumber, isPojo } from "./util"
-
 class MultimethodError extends Error {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(name: string, args: Array<any>) {
@@ -14,7 +12,7 @@ class MultimethodError extends Error {
 type Matcher<T = unknown> = (value: unknown) => value is T
 type MatcherType<T> = T extends Matcher<infer U> ? U : never
 
-class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
+export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
   private overloads_: Array<
     [
       { [K in keyof Args]: Matcher<unknown> },
@@ -67,38 +65,13 @@ class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
   }
 }
 
-export const merge = new Multimethod("merge").assign(
-  [isNumber, isNumber],
-  (x, y) => x + y,
-)
+const proto = Object.prototype
+const gpo = Object.getPrototypeOf
 
-export const eq = new Multimethod<boolean>("eq")
+const isPojo = (obj: unknown) => {
+  if (obj === null || typeof obj !== "object") {
+    return false
+  }
 
-export const add = new Multimethod("add").assign(
-  [isNumber, isNumber],
-  (x, y) => x + y,
-)
-
-export const subtract = new Multimethod("subtract").assign(
-  [isNumber, isNumber],
-  (x, y) => x - y,
-)
-
-export const multiply = new Multimethod("multiply").assign(
-  [isNumber, isNumber],
-  (x, y) => x * y,
-)
-
-export const divide = new Multimethod("divide").assign(
-  [isNumber, isNumber],
-  (x, y) => x / y,
-)
-
-export const square = new Multimethod("square").assign([isNumber], x => x ** 2)
-
-export const squareRoot = new Multimethod("squareRoot").assign(
-  [isNumber],
-  Math.sqrt,
-)
-
-export const show = new Multimethod<string>("show")
+  return gpo(obj) === proto
+}

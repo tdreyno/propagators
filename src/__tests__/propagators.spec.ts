@@ -1,7 +1,10 @@
 import { addContent, cells } from "../cell"
-import { adder } from "../propagators"
+import { add } from "../multimethods/index"
+import { zipNWith } from "../propagators"
 
-describe.skip("propagators", () => {
+export const adder = zipNWith(add.call)
+
+describe("propagators", () => {
   test("addition", () => {
     const [a, b, c] = cells(3)
 

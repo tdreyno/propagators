@@ -1,4 +1,4 @@
-import { merge, eq, show } from "./multimethods"
+import { merge, eq, show } from "../multimethods/index"
 
 export class Nothing_ {}
 export const Nothing = new Nothing_()

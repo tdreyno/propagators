@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
-import { content, Cell, Facts, Showable, show, query } from "../index"
+import { Showable, content, Cell, show } from "../../index"
+import { query, Facts } from "../index"
 
 const DATA_SOURCE =
   "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=100"
