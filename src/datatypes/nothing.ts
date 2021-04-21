@@ -5,12 +5,11 @@ export const Nothing = new Nothing_()
 export type Nothing = Nothing_
 
 // Check if a value is equal to the special value "Nothing"
-export const isNothing = <T = unknown>(
-  value: Nothing_ | T,
-): value is Nothing_ => value instanceof Nothing_
+export const isNothing = <T>(value: Nothing_ | T): value is Nothing_ =>
+  value instanceof Nothing_
 
 // Check if a value is not equal to the special value "Nothing"
-export const isAnything = <T = unknown>(value: Nothing_ | T): value is T =>
+export const isAnything = <T>(value: Nothing_ | T): value is T =>
   !isNothing(value)
 
 merge

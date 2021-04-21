@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
 import { Showable, content, Cell, show } from "../../index"
-import { query, Facts } from "../index"
+import { query, Facts, in_ } from "../index"
+import { includes } from "../predicates"
 
 const DATA_SOURCE =
   "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=100"
@@ -61,5 +62,19 @@ describe("facts", () => {
     ])(root)
 
     console.log("OR twitters", show.call(content(twitters)))
+
+    const { state } = query($ => [
+      [$.id, "party", in_(["Independent"])],
+      [$.id, "state", $.state],
+    ])(root)
+
+    console.log("Independent states", show.call(content(state)))
+
+    const { fullMikes } = query($ => [
+      [$.id, "name", includes("Mike")],
+      [$.id, "name", $.fullMikes],
+    ])(root)
+
+    console.log("Mikes", show.call(content(fullMikes)))
   })
 })

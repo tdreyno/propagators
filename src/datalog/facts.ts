@@ -7,10 +7,9 @@ import {
   isSet,
   union,
 } from "../datatypes/index"
-import { Showable } from "../util/index"
 import { Fact } from "./fact"
 
-class Facts_<E extends Showable, K extends string, V extends Showable> {
+class Facts_<E, K extends string, V> {
   public facts: Set<Fact<E, K, V>> = new Set()
 
   private entities: Set<E> = new Set()
@@ -260,15 +259,11 @@ class Facts_<E extends Showable, K extends string, V extends Showable> {
   }
 }
 
-export const Facts = <E extends Showable, K extends string, V extends Showable>(
+export const Facts = <E, K extends string, V>(
   facts: Array<Fact<E, K, V>> | Set<Fact<E, K, V>> = [],
 ) => new Facts_<E, K, V>(facts)
 
-export type Facts<
-  E extends Showable = any,
-  K extends string = string,
-  V extends Showable = any
-> = Facts_<E, K, V>
+export type Facts<E = any, K extends string = string, V = any> = Facts_<E, K, V>
 
 const isFacts = (value: unknown): value is Facts => value instanceof Facts_
 

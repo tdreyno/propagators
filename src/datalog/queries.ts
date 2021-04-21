@@ -13,7 +13,7 @@ const lookupSet = <T>(
   rootFacts: Facts,
   set: Set<T>,
   getter: "entities" | "keys" | "values",
-) =>
+): Facts<any, string, any> =>
   Array.from(set)
     .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
     .reduce((acc, f) => Facts([...acc.facts, ...f]), Facts())

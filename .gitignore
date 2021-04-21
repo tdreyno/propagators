@@ -3,3 +3,4 @@ pkg
 .DS_Store
 report.*
 yarn-error.log
+coverage

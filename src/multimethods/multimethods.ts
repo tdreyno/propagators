@@ -1,5 +1,4 @@
 class MultimethodError extends Error {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(name: string, args: Array<any>) {
     const argsString = args
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -59,7 +58,6 @@ export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
     ) => unknown,
   ): this
   assign(matcher: unknown[], fn: (...args: unknown[]) => unknown): this {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.overloads_.unshift([matcher, fn] as any)
     return this
   }
@@ -68,7 +66,8 @@ export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
 const proto = Object.prototype
 const gpo = Object.getPrototypeOf
 
-const isPojo = (obj: unknown) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const isPojo = (obj: unknown): obj is Record<string, unknown> => {
   if (obj === null || typeof obj !== "object") {
     return false
   }

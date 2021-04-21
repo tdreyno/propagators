@@ -1,14 +1,40 @@
-import { Nothing, isNothing } from "./datatypes/index"
+import { Nothing, isNothing, isAnything } from "./datatypes/index"
 import { merge, eq } from "./multimethods/index"
 import { zipNWith } from "./propagators"
 import { log } from "./log"
 
 export type Neighbor = () => void
 
-class Cell_<T = unknown> {
+class Cell_<T = any> {
   neighbors = new Set<Neighbor>()
 
-  constructor(public content: T | Nothing = Nothing) {}
+  constructor(
+    public content: T | Nothing,
+    private fn: (data: T) => T = (x: T): T => x,
+  ) {}
+
+  addContent(content: T | Nothing) {
+    // log("Adding new content", content)
+
+    const transformed = isAnything(content) ? this.fn(content) : content
+
+    const answer = merge.call(this.content, transformed) as T
+    log("Merge:", this.content, "&", transformed, "=", answer)
+
+    // if (isSet(transformed) && transformed.size === 0) {
+    //   throw new Error("derp")
+    // }
+
+    if (eq.call(answer, this.content)) {
+      log("Was equal")
+      return
+    }
+
+    log("Setting", answer)
+    this.content = answer
+
+    alertPropagators(this.neighbors)
+  }
 
   map<R>(fn: (content: T) => R): { into(output: Cell<R>): void } {
     log("map", fn)
@@ -35,12 +61,15 @@ class Cell_<T = unknown> {
 
 // Make a new, empty cell. Must pass generic for future type.
 export const Cell = <T>(content: T | Nothing = Nothing) => new Cell_<T>(content)
-export type Cell<T = unknown> = Cell_<T>
+
+export type Cell<T = any> = Cell_<T>
+
+export const TransformingCell = <T>(fn: (data: T) => T) =>
+  new Cell_<T>(Nothing, fn)
 
 export const isCell = (v: unknown): v is Cell => v instanceof Cell_
 
-export const cells = <T = unknown>(num: number) =>
-  range(num).map(() => Cell<T>())
+export const cells = <T = any>(num: number) => range(num).map(() => Cell<T>())
 
 // Get the content of a cell.
 export const content = <T>({ content }: Cell<T>) => content
@@ -53,25 +82,8 @@ const alertPropagators = (neighbors: Set<Neighbor>) =>
   neighbors.forEach(n => n())
 
 // Add content to the cell.
-export const addContent = <T>(content: T | Nothing, cell: Cell<T>) => {
-  // log("Adding new content", content)
-
-  const answer = merge.call(cell.content, content) as T
-  log("Merge:", cell.content, "&", content, "=", answer)
-
-  // if (isSet(content) && content.size === 0) {
-  //   throw new Error("derp")
-  // }
-
-  if (eq.call(answer, cell.content)) {
-    log("Was equal")
-    return
-  }
-
-  log("Setting", answer)
-  cell.content = answer
-  alertPropagators(cell.neighbors)
-}
+export const addContent = <T>(content: T | Nothing, cell: Cell<T>) =>
+  cell.addContent(content)
 
 export const addNeighbor = (neighbor: Neighbor) => (cell: Cell) => {
   cell.neighbors.add(neighbor)

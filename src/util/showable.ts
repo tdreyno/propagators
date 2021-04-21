@@ -5,7 +5,6 @@ export type Showable = {
 }
 
 export const isShowable = (x: unknown): x is Showable =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   x && (x as any)["toString"]
 
 show
