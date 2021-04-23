@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { eq, show } from "../multimethods/index"
 
 class Fact_<E, K extends string, V> {
@@ -7,7 +6,7 @@ class Fact_<E, K extends string, V> {
 
 export type Fact<E = any, K extends string = string, V = any> = Fact_<E, K, V>
 
-const isFact = (value: unknown): value is Fact => value instanceof Fact_
+export const isFact = (value: unknown): value is Fact => value instanceof Fact_
 
 const isEqualFact = (x: Fact, y: Fact): boolean =>
   !!eq.call(x.entity, y.entity) &&

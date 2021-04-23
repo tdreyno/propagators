@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch"
 import { Showable, content, Cell, show } from "../../index"
-import { query, Facts, in_ } from "../index"
+import { query, Facts, in_, Fact } from "../index"
 import { includes } from "../predicates"
 
 const DATA_SOURCE =
@@ -13,7 +12,7 @@ const pojoToFacts = <O extends Record<string, any>>(
   getId: (obj: O) => Showable,
 ): Facts<any, string, any> =>
   Object.entries(obj).reduce(
-    (facts, [key, value]) => (facts.add(getId(obj), key, value), facts),
+    (facts, [key, value]) => (facts.add(Fact(getId(obj), key, value)), facts),
     Facts(),
   )
 
@@ -34,16 +33,6 @@ describe("facts", () => {
     // console.log(facts.facts)
 
     const root = Cell(facts)
-    // const result = Cell<Facts>()
-
-    // const byKey = (key: string) => (facts: Facts): Facts =>
-    //   facts.lookup("keys", key)
-
-    // root.map(byKey("name")).into(result)
-
-    // if (!isNothing(result.content)) {
-    //   // console.log(Array.from(result.content.facts).map(f => f.toString()))
-    // }
 
     //
     // TODO: Figure out Sets with nulls

@@ -1,5 +1,13 @@
 export { Interval } from "./interval"
-export { Nothing, isAnything, isNothing } from "./nothing"
+export {
+  Nothing,
+  isAnything,
+  isNothing,
+  Just,
+  isJust,
+  Maybe,
+  fromNullable,
+} from "./maybe"
 export { isNumber } from "./number"
 export {
   isSet,

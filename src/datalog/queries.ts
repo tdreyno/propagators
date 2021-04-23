@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Facts } from "./facts"
 import { addContent, Cell, content, isCell } from "../cell"
-import { isAnything, intersection } from "../datatypes/index"
+import { isAnything, union } from "../datatypes/index"
 import { propagator, constant } from "../propagators"
 import { Fact } from "./fact"
 import { log } from "../log"
@@ -13,10 +12,10 @@ const lookupSet = <T>(
   rootFacts: Facts,
   set: Set<T>,
   getter: "entities" | "keys" | "values",
-): Facts<any, string, any> =>
+): Set<Fact<any, string, any>> =>
   Array.from(set)
     .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
-    .reduce((acc, f) => Facts([...acc.facts, ...f]), Facts())
+    .reduce(union, new Set())
 
 const relationship = <T, E, K, V>(
   root: Cell<Facts>,
@@ -37,13 +36,14 @@ const relationship = <T, E, K, V>(
 
       log(`relationship<${getter}>`, "root", rootFacts, set, subSet)
 
-      if (getter === "values" && subSet.isEmpty()) {
-        log("subSetFacts", subSet.facts)
+      if (getter === "values" && subSet.size <= 0) {
+        log("subSetFacts", subSet)
       }
 
+      const subFacts = Facts(subSet)
       Object.entries(notifiers).forEach(([key, value]) => {
-        log(key, subSet.set(key as any))
-        addContent(subSet.set(key as any), value!)
+        log(key, subFacts.set(key as any))
+        addContent(subFacts.set(key as any), value!)
       })
     }
   }, [root, cell])
@@ -103,34 +103,34 @@ const Q = <E = any, K extends string = string, V = any>(
     keys: kCell,
   })
 
-  return
-  const output = Cell<Facts>()
+  // return
+  // const output = Cell<Facts>()
 
-  propagator(() => {
-    const rootFacts = content(root)
-    const e = content(eCell)
-    const k = content(kCell)
-    const v = content(vCell)
+  // propagator(() => {
+  //   const rootFacts = content(root)
+  //   const e = content(eCell)
+  //   const k = content(kCell)
+  //   const v = content(vCell)
 
-    if (
-      isAnything(rootFacts) &&
-      isAnything(e) &&
-      isAnything(k) &&
-      isAnything(v)
-    ) {
-      const eSubSet = lookupSet(rootFacts, e, "entities").facts
-      const kSubSet = lookupSet(rootFacts, k, "keys").facts
-      const vSubSet = lookupSet(rootFacts, v, "values").facts
-      const possibilities = intersection(
-        intersection(eSubSet, kSubSet),
-        vSubSet,
-      )
+  //   if (
+  //     isAnything(rootFacts) &&
+  //     isAnything(e) &&
+  //     isAnything(k) &&
+  //     isAnything(v)
+  //   ) {
+  //     const eSubSet = lookupSet(rootFacts, e, "entities").facts
+  //     const kSubSet = lookupSet(rootFacts, k, "keys").facts
+  //     const vSubSet = lookupSet(rootFacts, v, "values").facts
+  //     const possibilities = intersection(
+  //       intersection(eSubSet, kSubSet),
+  //       vSubSet,
+  //     )
 
-      addContent(Facts(possibilities), output)
-    }
-  }, [eCell, kCell, vCell])
+  //     addContent(Facts(possibilities), output)
+  //   }
+  // }, [eCell, kCell, vCell])
 
-  return output
+  // return output
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
