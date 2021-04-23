@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import fetch from "node-fetch"
 import { Showable, content, Cell, show } from "../../index"
 import { query, Facts, in_, Fact } from "../index"
 import { includes } from "../predicates"
-
-const DATA_SOURCE =
-  "https://www.govtrack.us/api/v2/role?current=true&role_type=senator&limit=100"
+import json from "./senators.json"
 
 const pojoToFacts = <O extends Record<string, any>>(
   obj: O,
@@ -18,19 +15,17 @@ const pojoToFacts = <O extends Record<string, any>>(
 
 describe("facts", () => {
   test("senators", async () => {
-    const { objects } = await (await fetch(DATA_SOURCE)).json()
+    const { objects } = json
 
     const facts: Facts = objects.reduce((facts: Facts, obj: any) => {
       const { person, ...rest } = obj
 
       return facts.union(
-        pojoToFacts({ ...rest, ...person }, () => person["cspanid"]),
+        pojoToFacts({ ...rest, ...person }, () => person["bioguideid"]),
       )
     }, Facts())
 
-    // expect(facts.size()).toBe(170)
-
-    // console.log(facts.facts)
+    expect(facts.size).toBe(3464)
 
     const root = Cell(facts)
 
@@ -43,6 +38,7 @@ describe("facts", () => {
       [$.id, "name", $.names],
     ])(root)
 
+    expect(Array.from(content(names) as Set<string>)).toHaveLength(24)
     console.log("female senators", show.call(content(names)))
 
     const { twitters } = query($ => [
@@ -50,6 +46,7 @@ describe("facts", () => {
       [$.id, "twitterid", $.twitters],
     ])(root)
 
+    expect(content(twitters)).toEqual(new Set(["RonWyden", "SenJeffMerkley"]))
     console.log("OR twitters", show.call(content(twitters)))
 
     const { state } = query($ => [
@@ -57,6 +54,7 @@ describe("facts", () => {
       [$.id, "state", $.state],
     ])(root)
 
+    expect(content(state)).toEqual(new Set(["VT", "ME"]))
     console.log("Independent states", show.call(content(state)))
 
     const { fullMikes } = query($ => [
@@ -64,6 +62,7 @@ describe("facts", () => {
       [$.id, "name", $.fullMikes],
     ])(root)
 
+    expect(Array.from(content(fullMikes) as Set<string>)).toHaveLength(4)
     console.log("Mikes", show.call(content(fullMikes)))
   })
 })

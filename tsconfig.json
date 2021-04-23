@@ -19,7 +19,8 @@
     "declarationMap": true,
     "baseUrl": "./packages",
     "rootDir": "./src",
-    "outDir": "./pkg/dist-types"
+    "outDir": "./pkg/dist-types",
+    "resolveJsonModule": true
   },
   "include": ["./src"],
   "exclude": ["build", "pkg", "dist", "node_modules"]

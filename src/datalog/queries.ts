@@ -15,7 +15,7 @@ const lookupSet = <T>(
 ): Set<Fact<any, string, any>> =>
   Array.from(set)
     .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
-    .reduce(union, new Set())
+    .reduce((acc, set) => union(acc, set), new Set())
 
 const relationship = <T, E, K, V>(
   root: Cell<Facts>,
@@ -41,6 +41,7 @@ const relationship = <T, E, K, V>(
       }
 
       const subFacts = Facts(subSet)
+
       Object.entries(notifiers).forEach(([key, value]) => {
         log(key, subFacts.set(key as any))
         addContent(subFacts.set(key as any), value!)

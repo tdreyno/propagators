@@ -1,4 +1,4 @@
-import { Maybe, Nothing, fromNullable } from "../datatypes"
+import { Maybe, Nothing, fromNullable } from "../datatypes/index"
 
 export type Path = any[]
 
@@ -30,7 +30,7 @@ export class Trie<T> {
     trie.add(value, tail)
   }
 
-  get(...path: Path): Maybe<Trie<T> | T> {
+  get(path: Path): Maybe<Trie<T> | T> {
     const [head, ...tail] = path
 
     if (!this.children.has(head)) {
