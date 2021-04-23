@@ -15,7 +15,7 @@ const lookupSet = <T>(
 ): Set<Fact<any, string, any>> =>
   Array.from(set)
     .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
-    .reduce((acc, set) => union(acc, set), new Set())
+    .reduce(union, new Set())
 
 const relationship = <T, E, K, V>(
   root: Cell<Facts>,

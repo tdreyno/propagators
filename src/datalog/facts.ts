@@ -135,7 +135,6 @@ export type Facts<E = any, K extends string = string, V = any> = Facts_<E, K, V>
 
 const isFacts = (value: unknown): value is Facts => value instanceof Facts_
 
-merge.assign([isFacts, isFacts], (a, b) => a.union(b))
 show.assign([isFacts], facts => `Facts<${facts.size}>`)
 
 merge.assign([isSet, isSet], intersection)
