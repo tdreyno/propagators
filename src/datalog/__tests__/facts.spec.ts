@@ -34,10 +34,6 @@ describe("facts", () => {
 
     const data = Data(facts)
 
-    //
-    // TODO: Figure out Sets with nulls
-    //
-
     const { names } = data.query($ => [
       [$.id, "gender", "female"],
       [$.id, "name", $.names],

@@ -41,7 +41,6 @@ class Facts_<E, K extends string, V> {
   }
 
   add(fact: Fact<E, K, V>): void {
-    // TODO: Should null/undefined be allowed?
     if (fact.value === null || fact.value === undefined) {
       return
     }
