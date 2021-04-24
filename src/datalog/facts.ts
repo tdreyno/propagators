@@ -8,17 +8,16 @@ import {
 } from "../datatypes/index"
 import { Fact } from "./fact"
 import { Path, Trie } from "../trie/index"
+import { permutations } from "../util/index"
 
 const EMPTY_SET = new Set<any>()
 
-const factToPaths = (fact: Fact): Path[] => [
-  ["entities", fact.entity, "keys", fact.key, "values", fact.value],
-  ["entities", fact.entity, "values", fact.value, "keys", fact.key],
-  ["keys", fact.key, "entities", fact.entity, "values", fact.value],
-  ["keys", fact.key, "values", fact.value, "entities", fact.entity],
-  ["values", fact.value, "keys", fact.key, "entities", fact.entity],
-  ["values", fact.value, "entities", fact.entity, "keys", fact.key],
-]
+const factToPaths = (fact: Fact): Path[] =>
+  permutations([
+    ["entities", fact.entity],
+    ["keys", fact.key],
+    ["values", fact.value],
+  ]).map(path => path.flat())
 
 class Facts_<E, K extends string, V> {
   private trie: Trie<Fact<E, K, V>>
