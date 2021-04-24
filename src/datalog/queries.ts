@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Facts } from "./facts"
 import { addContent, Cell, content, isCell } from "../cell"
-import { isAnything, union } from "../datatypes/index"
+import { isAnything, unionMut } from "../datatypes/index"
 import { propagator, constant } from "../propagators"
 import { Fact } from "./fact"
 import { log } from "../log"
@@ -18,7 +18,7 @@ const lookupSet = <E, K extends string, V>(
       t =>
         (rootFacts.lookup(getter as any, t) || EMPTY_SET) as Set<Fact<E, K, V>>,
     )
-    .reduce(union, new Set())
+    .reduce(unionMut, new Set())
 
 const relationship = <E, K extends string, V, T extends E | K | V>(
   root: Cell<Facts<E, K, V>>,
@@ -106,35 +106,6 @@ const Q = <E = any, K extends string = string, V = any>(
     entities: eCell,
     keys: kCell,
   })
-
-  // return
-  // const output = Cell<Facts>()
-
-  // propagator(() => {
-  //   const rootFacts = content(root)
-  //   const e = content(eCell)
-  //   const k = content(kCell)
-  //   const v = content(vCell)
-
-  //   if (
-  //     isAnything(rootFacts) &&
-  //     isAnything(e) &&
-  //     isAnything(k) &&
-  //     isAnything(v)
-  //   ) {
-  //     const eSubSet = lookupSet(rootFacts, e, "entities").facts
-  //     const kSubSet = lookupSet(rootFacts, k, "keys").facts
-  //     const vSubSet = lookupSet(rootFacts, v, "values").facts
-  //     const possibilities = intersection(
-  //       intersection(eSubSet, kSubSet),
-  //       vSubSet,
-  //     )
-
-  //     addContent(Facts(possibilities), output)
-  //   }
-  // }, [eCell, kCell, vCell])
-
-  // return output
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

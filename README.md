@@ -9,7 +9,6 @@
 ## TODO
 
 - Faster Set equality
-- Mutating Set union/intersection for speed?
 
 ## License
 

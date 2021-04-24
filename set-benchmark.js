@@ -1,4 +1,4 @@
-const TIMES = 100000
+const TIMES = 50000
 
 const numbers = n =>
   Array(n)
@@ -8,14 +8,20 @@ const numbers = n =>
 const set = n =>
   new Set(numbers(n).map(() => Math.floor(Math.random() * 10000) - 10000 / 2))
 
-const BASE = numbers(TIMES).map(() => set(Math.floor(Math.random() * 200)))
+const BASE = numbers(TIMES).map(() => set(200))
 
 const cloneBase = () => [...BASE].map(s => new Set([...s]))
 
 const sets = n => numbers(n).map(cloneBase)
 
-const setEquality = (a, b) =>
+const setEqualitySpread = (a, b) =>
   a.size === b.size && [...a].every(value => b.has(value))
+
+const setEqualityHas = (a, b) => {
+  if (a.size !== b.size) return false
+  for (i of a.entries()) if (!b.has(i[0])) return false
+  return true
+}
 
 const pairs = array =>
   array.reduce((result, _, index, array) => {
@@ -85,9 +91,9 @@ console.time("unionMut")
 const unionA = pairs(unionSetA).forEach(pair => unionMut(...pair))
 console.timeEnd("unionMut")
 
-console.time("unionCopy")
-const unionB = pairs(unionSetB).forEach(pair => unionCopy(...pair))
-console.timeEnd("unionCopy")
+// console.time("unionCopy")
+// const unionB = pairs(unionSetB).forEach(pair => unionCopy(...pair))
+// console.timeEnd("unionCopy")
 
 console.time("unionSpread")
 const unionC = pairs(unionSetC).forEach(pair => unionSpread(...pair))
@@ -97,25 +103,25 @@ console.timeEnd("unionSpread")
  * difference
  */
 
-const [differenceSetA, differenceSetB, differenceSetC] = sets(3)
+// const [differenceSetA, differenceSetB, differenceSetC] = sets(3)
 
-console.time("differenceMut")
-const differenceA = pairs(differenceSetA).forEach(pair =>
-  differenceMut(...pair),
-)
-console.timeEnd("differenceMut")
+// console.time("differenceMut")
+// const differenceA = pairs(differenceSetA).forEach(pair =>
+//   differenceMut(...pair),
+// )
+// console.timeEnd("differenceMut")
 
-console.time("differenceCopy")
-const differenceB = pairs(differenceSetB).forEach(pair =>
-  differenceCopy(...pair),
-)
-console.timeEnd("differenceCopy")
+// console.time("differenceCopy")
+// const differenceB = pairs(differenceSetB).forEach(pair =>
+//   differenceCopy(...pair),
+// )
+// console.timeEnd("differenceCopy")
 
-console.time("differenceSpread")
-const differenceC = pairs(differenceSetC).forEach(pair =>
-  differenceSpread(...pair),
-)
-console.timeEnd("differenceSpread")
+// console.time("differenceSpread")
+// const differenceC = pairs(differenceSetC).forEach(pair =>
+//   differenceSpread(...pair),
+// )
+// console.timeEnd("differenceSpread")
 
 /**
  * intersection
@@ -129,14 +135,24 @@ const intersectionA = pairs(intersectionSetA).forEach(pair =>
 )
 console.timeEnd("intersectionMut")
 
-console.time("intersectionCopy")
-const intersectionB = pairs(intersectionSetB).forEach(pair =>
-  intersectionCopy(...pair),
-)
-console.timeEnd("intersectionCopy")
+// console.time("intersectionCopy")
+// const intersectionB = pairs(intersectionSetB).forEach(pair =>
+//   intersectionCopy(...pair),
+// )
+// console.timeEnd("intersectionCopy")
 
 console.time("intersectionSpread")
 const intersectionC = pairs(intersectionSetC).forEach(pair =>
   intersectionSpread(...pair),
 )
 console.timeEnd("intersectionSpread")
+
+const [equalitySetA, equalitySetB] = sets(2)
+
+console.time("equalSpread")
+const equalityA = pairs(equalitySetA).map(pair => setEqualitySpread(...pair))
+console.timeEnd("equalSpread")
+
+console.time("equalHas")
+const equalityB = pairs(equalitySetB).map(pair => setEqualityHas(...pair))
+console.timeEnd("equalHas")

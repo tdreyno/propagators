@@ -14,7 +14,11 @@ export {
   union,
   intersection,
   difference,
+  unionMut,
+  intersectionMut,
+  differenceMut,
   map as mapSet,
   filter as filterSet,
+  equals as equalsSet,
 } from "./set"
 export { isString } from "./string"

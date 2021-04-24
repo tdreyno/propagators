@@ -1,6 +1,7 @@
 import { eq, merge, show } from "../multimethods/index"
 import {
   difference,
+  equalsSet,
   intersection,
   isNothing,
   isSet,
@@ -135,8 +136,4 @@ merge.assign([isSet, isSet], intersection)
 merge.assign([isSet, isNothing], a => a)
 merge.assign([isNothing, isSet], (_, b) => b)
 
-// TODO: This has got to be slow?!
-eq.assign(
-  [isSet, isSet],
-  (a, b) => a.size === b.size && [...a].every(value => b.has(value)),
-)
+eq.assign([isSet, isSet], equalsSet)
