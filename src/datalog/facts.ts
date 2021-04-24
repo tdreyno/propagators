@@ -60,14 +60,11 @@ class Facts_<E, K extends string, V> {
     ])
   }
 
-  lookup(by: "entities", e: E): Set<Fact<E, K, V>> | undefined
-  lookup(by: "keys", k: K): Set<Fact<E, K, V>> | undefined
-  lookup(by: "values", v: V): Set<Fact<E, K, V>> | undefined
   lookup(
     by: "entities" | "keys" | "values",
     x: E | K | V,
   ): Set<Fact<E, K, V>> | undefined {
-    return this.trie.get([by, x]).mapBoth(
+    return this.trie.get([by, x]).fold(
       (x: any) => x.values.get("all"),
       () => undefined,
     )
@@ -113,9 +110,6 @@ class Facts_<E, K extends string, V> {
     this.trie.clear()
   }
 
-  set(by: "entities"): Set<E>
-  set(by: "keys"): Set<K>
-  set(by: "values"): Set<V>
   set(by: "entities" | "keys" | "values"): Set<E | K | V> {
     const result = this.trie.values.get(by)
 
@@ -135,6 +129,7 @@ export type Facts<E = any, K extends string = string, V = any> = Facts_<E, K, V>
 
 const isFacts = (value: unknown): value is Facts => value instanceof Facts_
 
+merge.assign([isFacts, isFacts], (a, b) => a.union(b))
 show.assign([isFacts], facts => `Facts<${facts.size}>`)
 
 merge.assign([isSet, isSet], intersection)

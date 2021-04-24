@@ -8,17 +8,20 @@ import { log } from "../log"
 
 const EMPTY_SET = new Set<Fact>()
 
-const lookupSet = <T>(
-  rootFacts: Facts,
-  set: Set<T>,
+const lookupSet = <E, K extends string, V>(
+  rootFacts: Facts<E, K, V>,
+  set: Set<E | K | V>,
   getter: "entities" | "keys" | "values",
-): Set<Fact<any, string, any>> =>
+): Set<Fact<E, K, V>> =>
   Array.from(set)
-    .map(t => rootFacts.lookup(getter as any, t) || EMPTY_SET)
+    .map(
+      t =>
+        (rootFacts.lookup(getter as any, t) || EMPTY_SET) as Set<Fact<E, K, V>>,
+    )
     .reduce(union, new Set())
 
-const relationship = <T, E, K, V>(
-  root: Cell<Facts>,
+const relationship = <E, K extends string, V, T extends E | K | V>(
+  root: Cell<Facts<E, K, V>>,
   cell: Cell<Set<T>>,
   getter: "entities" | "keys" | "values",
   notifiers: {
@@ -28,7 +31,7 @@ const relationship = <T, E, K, V>(
   },
 ) =>
   propagator(() => {
-    const rootFacts = content(root) as Facts
+    const rootFacts = content(root) as Facts<E, K, V>
     const set = content(cell) as Set<T>
 
     if (isAnything(rootFacts) && isAnything(set)) {
@@ -44,7 +47,7 @@ const relationship = <T, E, K, V>(
 
       Object.entries(notifiers).forEach(([key, value]) => {
         log(key, subFacts.set(key as any))
-        addContent(subFacts.set(key as any), value!)
+        addContent(subFacts.set(key as any), value as any)
       })
     }
   }, [root, cell])
@@ -58,7 +61,7 @@ const isPlaceholder = (v: unknown): v is Placeholder =>
 
 const isValue = <T>(v: unknown): v is T => !isPlaceholder(v) && !isCell(v)
 
-type Query<E = any, K extends string = string, V = any> = [
+export type Query<E = any, K extends string = string, V = any> = [
   e: E | Placeholder | Cell<Set<E>>,
   k: K | Placeholder | Cell<Set<K>>,
   v: V | Placeholder | Cell<Set<V>>,
@@ -83,7 +86,7 @@ const Q = <E = any, K extends string = string, V = any>(
   k: K | Placeholder | Cell<Set<K>>,
   v: V | Placeholder | Cell<Set<V>>,
   // ) => (root: Cell<Facts>): Cell<Facts> => {
-) => (root: Cell<Facts>) => {
+) => (root: Cell<Facts<E, K, V>>) => {
   // const result = Cell<Facts>()
   const eCell = toCell(e)
   const kCell = toCell(k)
@@ -135,10 +138,10 @@ const Q = <E = any, K extends string = string, V = any>(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const query = (fn: ($: Record<string, Cell>) => Query[]) => (
-  root: Cell<Facts>,
-): Record<string, Cell<unknown>> => {
-  const $ = new Proxy<Record<string, Cell>>(
+export const query = <E = any, K extends string = string, V = any>(
+  fn: ($: Record<string, Cell<E | K | V>>) => Query[],
+) => (root: Cell<Facts<E, K, V>>): Record<string, Cell<E | K | V>> => {
+  const $ = new Proxy<Record<string, Cell<E | K | V>>>(
     {},
     {
       get: function (obj, prop: string) {
@@ -151,7 +154,7 @@ export const query = (fn: ($: Record<string, Cell>) => Query[]) => (
     },
   )
 
-  fn($).forEach(q => Q(...q)(root))
+  fn($).forEach(q => Q<E, K, V>(...q)(root))
 
   return $
 }

@@ -8,7 +8,7 @@ export class Just_<T = any> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  mapBoth<U>(justFn: (value: T) => U, _nothingFn: () => U): U {
+  fold<U>(justFn: (value: T) => U, _nothingFn: () => U): U {
     return justFn(this.value)
   }
 
@@ -36,7 +36,7 @@ export class Nothing_ {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  mapBoth<U>(_justFn: (value: unknown) => U, nothingFn: () => U): U {
+  fold<U>(_justFn: (value: unknown) => U, nothingFn: () => U): U {
     return nothingFn()
   }
 
