@@ -25,14 +25,29 @@ class Facts_<E, K extends string, V> {
 
   constructor(facts: Array<Fact<E, K, V>> | Set<Fact<E, K, V>> = []) {
     // Setup Trie storage
-    this.trie = new Trie((acc, f) => {
-      // Add to all
-      acc.set("all", (acc.get("all") || new Set()).add(f))
+    this.trie = new Trie((acc, f, mode) => {
+      switch (mode) {
+        case "add":
+          // Add to all
+          acc.set("all", (acc.get("all") || new Set()).add(f))
 
-      // Add per-datum
-      acc.set("entities", (acc.get("entities") || new Set()).add(f.entity))
-      acc.set("keys", (acc.get("keys") || new Set()).add(f.key))
-      acc.set("values", (acc.get("values") || new Set()).add(f.value))
+          // Add per-datum
+          acc.set("entities", (acc.get("entities") || new Set()).add(f.entity))
+          acc.set("keys", (acc.get("keys") || new Set()).add(f.key))
+          acc.set("values", (acc.get("values") || new Set()).add(f.value))
+
+          break
+
+        case "remove":
+          acc.has("all") && acc.set("all", acc.get("all").remove(f))
+          acc.has("entities") &&
+            acc.set("entities", acc.get("entities").remove(f.entity))
+          acc.has("keys") && acc.set("keys", acc.get("entities").remove(f.key))
+          acc.has("values") &&
+            acc.set("values", acc.get("entities").remove(f.value))
+
+          break
+      }
 
       return acc
     })
@@ -46,6 +61,15 @@ class Facts_<E, K extends string, V> {
     }
 
     factToPaths(fact).forEach(path => this.trie.add(fact, path))
+  }
+
+  remove(fact: Fact<E, K, V>): void {
+    factToPaths(fact).forEach(path => this.trie.remove(path))
+  }
+
+  update(from: Fact<E, K, V>, to: Fact<E, K, V>): void {
+    this.remove(from)
+    this.add(to)
   }
 
   has(fact: Fact): boolean {

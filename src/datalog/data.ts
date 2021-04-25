@@ -22,6 +22,11 @@ class Data_<E = any, K extends string = string, V = any> {
     this.cell.addContent(Facts(facts))
   }
 
+  // remove(fact: Fact<E, K, V>): void {
+  //   // TODO:??
+  //   // this.cell.remove?Content(Facts([fact]))
+  // }
+
   query(
     fn: ($: Record<string, Cell<E | K | V>>) => Query[],
   ): Record<string, Cell<E | K | V>> {
