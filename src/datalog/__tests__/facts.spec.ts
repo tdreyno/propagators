@@ -30,9 +30,8 @@ describe("facts", () => {
       )
     }, new Set<Fact>())
 
-    expect(facts.size).toBe(3800)
-
     const data = Data(facts)
+    expect(data.size).toBe(3464)
 
     const { names } = data.query($ => [
       [$.id, "gender", "female"],
@@ -57,6 +56,12 @@ describe("facts", () => {
 
     expect(content(state)).toEqual(new Set(["VT", "ME"]))
     console.log("Independent states", show.call(content(state)))
+
+    data.addMany([Fact(-1, "party", "Independent"), Fact(-1, "state", "??")])
+    expect(data.size).toBe(3466)
+
+    expect(content(state)).toEqual(new Set(["VT", "ME", "??"]))
+    console.log("Independent states2", show.call(content(state)))
 
     const { fullMikes } = data.query($ => [
       [$.id, "name", includes("Mike")],

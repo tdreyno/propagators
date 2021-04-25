@@ -36,7 +36,6 @@ const relationship = <E, K extends string, V, T extends E | K | V>(
 
     if (isAnything(rootFacts) && isAnything(set)) {
       const subSet = lookupSet(rootFacts, set, getter)
-
       log(`relationship<${getter}>`, "root", rootFacts, set, subSet)
 
       if (getter === "values" && subSet.size <= 0) {
@@ -112,18 +111,25 @@ const Q = <E = any, K extends string = string, V = any>(
 export const query = <E = any, K extends string = string, V = any>(
   fn: ($: Record<string, Cell<E | K | V>>) => Query[],
 ) => (root: Cell<Facts<E, K, V>>): Record<string, Cell<E | K | V>> => {
+  let variables: Array<Cell<E | K | V>> = []
+
   const $ = new Proxy<Record<string, Cell<E | K | V>>>(
     {},
     {
       get: function (obj, prop: string) {
         if (!(prop in obj)) {
           obj[prop] = Cell()
+          variables.push(obj[prop])
         }
 
         return obj[prop]
       },
     },
   )
+
+  propagator(() => {
+    variables.forEach(v => v.clear())
+  }, [root])
 
   fn($).forEach(q => Q<E, K, V>(...q)(root))
 

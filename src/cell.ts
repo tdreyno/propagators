@@ -3,7 +3,7 @@ import { merge, eq } from "./multimethods/index"
 import { zipNWith } from "./propagators"
 import { log } from "./log"
 
-export type Neighbor = () => void
+export type Neighbor = (changed: Cell) => void
 
 class Cell_<T = any> {
   neighbors = new Set<Neighbor>()
@@ -33,7 +33,13 @@ class Cell_<T = any> {
     log("Setting", answer)
     this.content = answer
 
-    alertPropagators(this.neighbors)
+    alertPropagators(this.neighbors, this)
+  }
+
+  clear() {
+    log("Clearing")
+    this.content = Nothing
+    alertPropagators(this.neighbors, this)
   }
 
   map<R>(fn: (content: T) => R): { into(output: Cell<R>): void } {
@@ -78,8 +84,8 @@ export const content = <T>({ content }: Cell<T>) => content
 export const isEmpty = ({ content }: Cell) => isNothing(content)
 
 // Alert neighbords
-const alertPropagators = (neighbors: Set<Neighbor>) =>
-  neighbors.forEach(n => n())
+const alertPropagators = (neighbors: Set<Neighbor>, cell: Cell) =>
+  neighbors.forEach(n => n(cell))
 
 // Add content to the cell.
 export const addContent = <T>(content: T | Nothing, cell: Cell<T>) =>
@@ -87,7 +93,7 @@ export const addContent = <T>(content: T | Nothing, cell: Cell<T>) =>
 
 export const addNeighbor = (neighbor: Neighbor) => (cell: Cell) => {
   cell.neighbors.add(neighbor)
-  alertPropagators(new Set([neighbor]))
+  alertPropagators(new Set([neighbor]), cell)
 }
 
 // Range of numbers

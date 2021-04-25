@@ -10,6 +10,10 @@ class Data_<E = any, K extends string = string, V = any> {
     this.addMany(facts)
   }
 
+  get size(): number {
+    return (this.cell.content as Facts<E, K, V>).size
+  }
+
   add(fact: Fact<E, K, V>): void {
     this.addMany([fact])
   }

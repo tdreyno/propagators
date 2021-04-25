@@ -1,3 +1,5 @@
+import { isPojo } from "../util/isPojo"
+
 class MultimethodError extends Error {
   constructor(name: string, args: Array<any>) {
     const argsString = args
@@ -61,16 +63,4 @@ export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
     this.overloads_.unshift([matcher, fn] as any)
     return this
   }
-}
-
-const proto = Object.prototype
-const gpo = Object.getPrototypeOf
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-const isPojo = (obj: unknown): obj is Record<string, unknown> => {
-  if (obj === null || typeof obj !== "object") {
-    return false
-  }
-
-  return gpo(obj) === proto
 }
