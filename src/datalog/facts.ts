@@ -13,12 +13,15 @@ import { permutations } from "../util/index"
 
 const EMPTY_SET = new Set<any>()
 
+// Node 10 doesn't have Array.prototype.flat
+const flat = (arr: any[]) => arr.reduce((acc, val) => acc.concat(val), [])
+
 const factToPaths = (fact: Fact): Path[] =>
   permutations([
     ["entities", fact.entity],
     ["keys", fact.key],
     ["values", fact.value],
-  ]).map(path => path.flat())
+  ]).map(flat)
 
 class Facts_<E, K extends string, V> {
   private trie: Trie<Fact<E, K, V>>
