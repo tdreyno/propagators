@@ -18,7 +18,9 @@ const pojoToFacts = <O extends Record<string, any>>(
   )
 
 describe("facts", () => {
-  test("senators", async () => {
+  let data: Data
+
+  beforeAll(() => {
     const { objects } = json
 
     const facts = objects.reduce((acc, obj: any) => {
@@ -30,9 +32,11 @@ describe("facts", () => {
       )
     }, new Set<Fact>())
 
-    const data = Data(facts)
+    data = Data(facts)
     expect(data.size).toBe(3464)
+  })
 
+  it("should perform simple queries", () => {
     const { names } = data.query($ => [
       [$.id, "gender", "female"],
       [$.id, "name", $.names],
@@ -48,7 +52,9 @@ describe("facts", () => {
 
     expect(content(twitters)).toEqual(new Set(["RonWyden", "SenJeffMerkley"]))
     console.log("OR twitters", show.call(content(twitters)))
+  })
 
+  it("should update data when new facts are added", () => {
     const { state } = data.query($ => [
       [$.id, "party", in_(["Independent"])],
       [$.id, "state", $.state],
@@ -62,7 +68,9 @@ describe("facts", () => {
 
     expect(content(state)).toEqual(new Set(["VT", "ME", "??"]))
     console.log("Independent states2", show.call(content(state)))
+  })
 
+  it("should query using predicates", () => {
     const { fullMikes } = data.query($ => [
       [$.id, "name", includes("Mike")],
       [$.id, "name", $.fullMikes],
