@@ -83,7 +83,7 @@
   },
   "dependencies": {},
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "config": {
     "commitizen": {
