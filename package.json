@@ -51,7 +51,7 @@
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
-    "@commitlint/prompt": "^15.0.0",
+    "@commitlint/prompt": "^16.0.0",
     "@pika/pack": "^0.5.0",
     "@pika/plugin-build-node": "^0.9.2",
     "@pika/plugin-build-web": "^0.9.2",
@@ -63,7 +63,7 @@
     "@types/node-fetch": "^3.0.3",
     "@types/ramda": "^0.27.58",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
+    "@typescript-eslint/parser": "^5.8.1",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.4.0",
@@ -77,9 +77,9 @@
     "prettier": "^2.5.1",
     "semantic-release": "^18.0.1",
     "terser": "^5.10.0",
-    "ts-jest": "^27.1.0",
+    "ts-jest": "^27.1.2",
     "ts-toolbelt": "^9.6.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.4"
   },
   "dependencies": {},
   "engines": {
