@@ -1141,14 +1141,6 @@
     "@commitlint/types" "^17.4.0"
     ajv "^8.11.0"
 
-"@commitlint/ensure@^17.0.0":
-  version "17.0.0"
-  resolved "https://registry.yarnpkg.com/@commitlint/ensure/-/ensure-17.0.0.tgz#781ff5f8870cb98ce4496d5c71649a4cd122a0e0"
-  integrity sha512-M2hkJnNXvEni59S0QPOnqCKIK52G1XyXBGw51mvh7OXDudCmZ9tZiIPpU882p475Mhx48Ien1MbWjCP1zlyC0A==
-  dependencies:
-    "@commitlint/types" "^17.0.0"
-    lodash "^4.17.19"
-
 "@commitlint/ensure@^17.4.0":
   version "17.4.0"
   resolved "https://registry.yarnpkg.com/@commitlint/ensure/-/ensure-17.4.0.tgz#3de65768bfccb9956ec3a0ecd8a415421bf315e5"
@@ -1192,7 +1184,7 @@
     "@commitlint/rules" "^17.4.2"
     "@commitlint/types" "^17.4.0"
 
-"@commitlint/load@>6.1.1", "@commitlint/load@^17.2.0", "@commitlint/load@^17.4.2":
+"@commitlint/load@>6.1.1", "@commitlint/load@^17.4.2":
   version "17.4.2"
   resolved "https://registry.yarnpkg.com/@commitlint/load/-/load-17.4.2.tgz#551875c3e1dce6dc0375dc9c8ad551de8ba35de4"
   integrity sha512-Si++F85rJ9t4hw6JcOw1i2h0fdpdFQt0YKwjuK4bk9KhFjyFkRxvR3SB2dPaMs+EwWlDrDBGL+ygip1QD6gmPw==
@@ -1226,17 +1218,16 @@
     conventional-changelog-angular "^5.0.11"
     conventional-commits-parser "^3.2.2"
 
-"@commitlint/prompt@^17.2.0":
-  version "17.2.0"
-  resolved "https://registry.yarnpkg.com/@commitlint/prompt/-/prompt-17.2.0.tgz#e687521bce9bf4fc1ee1eb7a0b89e80f5e1be8fd"
-  integrity sha512-xMWMJteq0VZ25i8IaXGBmUMEg8l5SQewvk21jp//BPkKSOxEwXFUSiwMA6iUkILCWHHffQBAgs/1O+4HqZrtaQ==
+"@commitlint/prompt@^17.4.2":
+  version "17.4.2"
+  resolved "https://registry.yarnpkg.com/@commitlint/prompt/-/prompt-17.4.2.tgz#a2aad805ba5b0062b9f911c9c82367159a0a1853"
+  integrity sha512-I+Sjzep5sSFDz23ocsIj2cD8SwuRQhCgbzSARl+thAqCK1P/+S9A6UceuTmqLzkVYFHP61bz2BaRPd+e/dfpRQ==
   dependencies:
-    "@commitlint/ensure" "^17.0.0"
-    "@commitlint/load" "^17.2.0"
-    "@commitlint/types" "^17.0.0"
+    "@commitlint/ensure" "^17.4.0"
+    "@commitlint/load" "^17.4.2"
+    "@commitlint/types" "^17.4.0"
     chalk "^4.1.0"
     inquirer "^6.5.2"
-    lodash "^4.17.19"
 
 "@commitlint/read@^17.4.2":
   version "17.4.2"
@@ -1284,7 +1275,7 @@
   dependencies:
     find-up "^5.0.0"
 
-"@commitlint/types@^17.0.0", "@commitlint/types@^17.4.0":
+"@commitlint/types@^17.4.0":
   version "17.4.0"
   resolved "https://registry.yarnpkg.com/@commitlint/types/-/types-17.4.0.tgz#c7c2b97b959f6175c164632bf26208ce417b3f31"
   integrity sha512-2NjAnq5IcxY9kXtUeO2Ac0aPpvkuOmwbH/BxIm36XXK5LtWFObWJWjXOA+kcaABMrthjWu6la+FUpyYFMHRvbA==
