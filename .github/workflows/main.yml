@@ -15,12 +15,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: yarn install
-      - run: yarn test
-      - run: yarn build
-      - name: Code Climate Coverage Action
-        uses: paambaati/codeclimate-action@v3.2.0
-        env:
-          CC_TEST_REPORTER_ID: 38bbaa172c6d62c02a8cf2a4e77bdfda268b4c94012e4dd9f69a6a7e8f63bada
-        with:
-          coverageCommand: yarn coverage
+      - run: npm ci
+      - run: npm run test:inband
+      - run: npm run build

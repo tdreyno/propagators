@@ -67,12 +67,8 @@ describe("building-height", () => {
       })
 
     // Part 1
-    const [
-      barometerHeight,
-      barometerShadow,
-      buildingHeight,
-      buildingShadow,
-    ] = cells(4)
+    const [barometerHeight, barometerShadow, buildingHeight, buildingShadow] =
+      cells(4)
 
     similarTriangles(
       barometerShadow,

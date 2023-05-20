@@ -49,7 +49,7 @@ export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
     A extends Matcher,
     B extends Matcher,
     C extends Matcher,
-    D extends Matcher
+    D extends Matcher,
   >(
     matcher: [A, B, C, D],
     fn: (
@@ -60,6 +60,7 @@ export class Multimethod<R = unknown, Args extends unknown[] = unknown[]> {
     ) => unknown,
   ): this
   assign(matcher: unknown[], fn: (...args: unknown[]) => unknown): this {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.overloads_.unshift([matcher, fn] as any)
     return this
   }

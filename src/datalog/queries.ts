@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Facts } from "./facts"
 import { addContent, Cell, content, isCell } from "../cell"
@@ -72,66 +73,68 @@ const toCell = <T>(x: T | Placeholder | Cell<Set<T>>): Cell<Set<T>> => {
   }
 
   if (isValue<T>(x)) {
-    return constant(
-      new Set<T>([x]),
-    )
+    return constant(new Set<T>([x]))
   }
 
   return Cell<Set<T>>()
 }
 
-const Q = <E = any, K extends string = string, V = any>(
-  e: E | Placeholder | Cell<Set<E>>,
-  k: K | Placeholder | Cell<Set<K>>,
-  v: V | Placeholder | Cell<Set<V>>,
-  // ) => (root: Cell<Facts>): Cell<Facts> => {
-) => (root: Cell<Facts<E, K, V>>) => {
-  // const result = Cell<Facts>()
-  const eCell = toCell(e)
-  const kCell = toCell(k)
-  const vCell = toCell(v)
+const Q =
+  <E = any, K extends string = string, V = any>(
+    e: E | Placeholder | Cell<Set<E>>,
+    k: K | Placeholder | Cell<Set<K>>,
+    v: V | Placeholder | Cell<Set<V>>,
+    // ) => (root: Cell<Facts>): Cell<Facts> => {
+  ) =>
+  (root: Cell<Facts<E, K, V>>) => {
+    // const result = Cell<Facts>()
+    const eCell = toCell(e)
+    const kCell = toCell(k)
+    const vCell = toCell(v)
 
-  relationship(root, eCell, "entities", {
-    keys: kCell,
-    values: vCell,
-  })
+    relationship(root, eCell, "entities", {
+      keys: kCell,
+      values: vCell,
+    })
 
-  relationship(root, kCell, "keys", {
-    entities: eCell,
-    values: vCell,
-  })
+    relationship(root, kCell, "keys", {
+      entities: eCell,
+      values: vCell,
+    })
 
-  relationship(root, vCell, "values", {
-    entities: eCell,
-    keys: kCell,
-  })
-}
+    relationship(root, vCell, "values", {
+      entities: eCell,
+      keys: kCell,
+    })
+  }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const query = <E = any, K extends string = string, V = any>(
-  fn: ($: Record<string, Cell<E | K | V>>) => Query[],
-) => (root: Cell<Facts<E, K, V>>): Record<string, Cell<E | K | V>> => {
-  let variables: Array<Cell<E | K | V>> = []
+export const query =
+  <E = any, K extends string = string, V = any>(
+    fn: ($: Record<string, Cell<E | K | V>>) => Query[],
+  ) =>
+  (root: Cell<Facts<E, K, V>>): Record<string, Cell<E | K | V>> => {
+    const variables: Array<Cell<E | K | V>> = []
 
-  const $ = new Proxy<Record<string, Cell<E | K | V>>>(
-    {},
-    {
-      get: function (obj, prop: string) {
-        if (!(prop in obj)) {
-          obj[prop] = Cell()
-          variables.push(obj[prop])
-        }
+    const $ = new Proxy<Record<string, Cell<E | K | V>>>(
+      {},
+      {
+        get: function (obj, prop: string) {
+          if (!(prop in obj)) {
+            obj[prop] = Cell()
+            variables.push(obj[prop])
+          }
 
-        return obj[prop]
+          return obj[prop]
+        },
       },
-    },
-  )
+    )
 
-  propagator(() => {
-    variables.forEach(v => v.clear())
-  }, [root])
+    propagator(() => {
+      variables.forEach(v => v.clear())
+    }, [root])
 
-  fn($).forEach(q => Q<E, K, V>(...q)(root))
+    fn($).forEach(q => Q<E, K, V>(...q)(root))
 
-  return $
-}
+    return $
+  }

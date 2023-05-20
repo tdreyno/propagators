@@ -1,7 +1,7 @@
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
-module.exports = {
+export default {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -31,7 +31,7 @@ module.exports = {
   //   "/node_modules/"
   // ],
 
-  transformIgnorePatterns: ["node_modules/(?!@druyan/druyan)"],
+  // transformIgnorePatterns: ["node_modules/(?!@druyan/druyan)"],
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -60,11 +60,8 @@ module.exports = {
   // globalTeardown: null,
 
   // A set of global variables that need to be available in all test environments
-  globals: {
-    "ts-jest": {
-      diagnostics: false,
-    },
-  },
+  // globals: {
+  // },
 
   // An array of directory names to be searched recursively up from the requiring module's location
   // moduleDirectories: [
@@ -163,8 +160,9 @@ module.exports = {
   // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
   // testURL: "http://localhost",
 
-  // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
-  timers: "fake",
+  fakeTimers: {
+    enableGlobally: true,
+  },
 
   // A map from regular expressions to paths to transformers
   // transform: null,
