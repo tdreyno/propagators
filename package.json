@@ -45,7 +45,7 @@
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",
     "semantic-release": "^24.0.0",
-    "terser": "^5.31.1",
+    "terser": "^5.31.3",
     "ts-jest": "^29.1.5",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
